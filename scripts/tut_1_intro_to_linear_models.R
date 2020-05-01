@@ -191,6 +191,16 @@ confint(mod1)
 # become 1g heavier), we can be quite confident that they will produce 
 # 1.52 - 3.68 more larvae than an adult 1g lighter in mass.
 
+# - (4) How much variation is accounted for?
+#       - We must extract the adjusted R-squared value
+#         - This shows how much variation in your response var (e.g. larvae)
+#           is explained by your predictors (e.g. adult_mass)
+summary(mod1)$adj.r.squared
+
+#       Here, an R-squared = 0.21
+#       Therefore, 21% of the variation in larvae produced 
+#       is explained by female body mass. 
+
 ###
 # Step 5 - Plot your model predictions 
 ###
@@ -231,4 +241,48 @@ ggplot() +
        y = "No. of larvae produced",
        subtitle = "Do larger females produce more larvae?")
 
+###
+# Step 6 - Write-up your results  
+###
 
+# Everyone has a different style of writing. 
+# Below I give some examples. 
+# Any text within [] is me explaining, and not actually included in the text. 
+# This is my approach, it does not have to be yours. 
+
+# (1) The standard example is:
+# Adult body mass had a significant influence on the number of larvae produced 
+# (P < 0.05)
+
+# - In my opinion, this is pretty poor. 
+# - It really tells us nothing. 
+
+# (2) Improvement on (1):
+# Adult body mass had a significant influence on the number of larvae produced 
+# (beta = 2.61; P < 0.05). [where beta is estimate from 3]. 
+
+# - Adding the parameter estimate at least tells the reader the sign
+#   and magnitude of the effect adult_mass has on larvae. 
+
+# (3) More improvements:
+# Adult body mass had a significant influence on the number of larvae produced 
+# (beta = 2.61; 95% CI = 1.52 - 3.68; P < 0.05).
+
+# - Adding the CI shows the uncertainty in our estimate.
+# - Much better. 
+# - We can still do better. 
+
+# (4) Actually explain your results.
+#     - This is my prefered approach. 
+
+# Larger females produced more larvae than smaller adults (P < 0.05). 
+# Approximately 21% of the variation in fecundity was explained
+# by female body mass (Adj. R-squared = 0.21). 
+# For every 1g increase in adult body mass, adults produce approximately
+# 2.61 more larvae (95% CI: 1.52 - 3.68) (Fig. x) [refer the reader to your plot
+# of the model prediction]. 
+
+# - We have told the reader exactly how the predictor effects response,
+#   we have reported uncertainty, and referred the reader to our awesome graph!!! 
+
+# Your results for your paper are now ready to go!!!

@@ -129,7 +129,7 @@ hist(resids) # plot a histogram
 # 3. Homogeneity of variance
 #   - Testing the assumption of equality of variances. 
 #   - Residuals vs fitted - we don't want to see any pattern.
-#   - Here, we wan't to see that red line lie on the y = 0 line.
+#   - Here, we want to see that red line lie on the y = 0 line.
 #   - You really don't want to see your white circles have any pattern (i.e. funnel, U-shape)
 plot(mod1, which = 1)
 
@@ -147,6 +147,9 @@ plot(mod1, which = 1)
 # Print summary of results 
 summary(mod1)
 
+# Get Type II sum of squares 
+car::Anova(mod1, type="II")
+
 # - (1) Intercept estimate - value of abundance where X (adult_mass) = 0
 coef(mod1)[[1]]
 
@@ -157,7 +160,7 @@ coef(mod1)[[1]]
 #       and be very important. 
 
 # - (2) Is my treatment/factor significant?
-#       Look at the row for your predictor variable (here: adult_mass)
+#       Look at the row for your predictor variable in SOS table (here: adult_mass)
 #       Look at the P-value: P <0.05 means this variable is significant 
 #       - Here, adult mass P-val < 0.05, 
 #         so we conclude there is an association between adult mass and larvae produced. 

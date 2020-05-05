@@ -32,10 +32,13 @@ data <- readxl::read_excel("./data_raw/poisson_data.xlsx")
 str(data)
 head(data)
 
-# What is the situation?
+###
+# - Experimental design 
+###
+
 # Ran an experiment to determine
-# - Does temperature influence insect reproduction?
-# - Does insect body mass influence insect reproduction? 
+# - (1) Does temperature influence insect reproduction?
+# - (2) Does insect body mass influence insect reproduction? 
 
 # Temperature = temp - 4 levels:
 # - 15 degrees, 20 degrees, 25 degrees, 30 degrees
@@ -48,7 +51,7 @@ head(data)
 # - numeric variable
 
 ###
-# Research questions #1 -  Do larger insects produce more larvae? 
+# Research question #1 -  Do larger insects produce more larvae? 
 ###
 
 ###

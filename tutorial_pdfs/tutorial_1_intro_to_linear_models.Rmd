@@ -1,0 +1,78 @@
+---
+title: 'Tutorial #1 - Introduction to Linear Modelling'
+author: "Guy F. Sutton"
+date: "05/05/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = TRUE, include = FALSE}
+# Load required libraries
+library(tidyverse)
+
+# Set theme for ggplot graphs
+theme_set(theme_classic() +
+            theme(panel.border = element_rect(colour = "black", fill = NA),
+                  axis.text = element_text(colour = "black"),
+                  axis.title.x = element_text(margin = unit(c(2, 0, 0, 0), "mm")),
+                  axis.title.y = element_text(margin = unit(c(0, 4, 0, 0), "mm")),
+                  legend.position = "none"))
+```
+
+# What is a linear regression? 
+
+A linear regression model is one of the most basic models used to analyse ecological data. But, what makes something a linear regression model?
+
+1. Linear - Our predictor (independent) variable shows a linear relationship with our response (dependent) variable.
+2. Regression - We are measuring the response between one (or more) predictor variables and a response variable. 
+
+When we model one numeric predictor and a numeric response variable, we have a *simple linear regression (SLR)*. When we have more than one numeric predictors and a numeric response variable, we have a *multiple regression*. Today, we are going to focus on simple linear regressions in R. 
+
+So, when we model Y as a linear function of X, we are performing an SLR. 
+
+# What are the assumptions of a SLR? 
+
+There is a nice acronym which makes this easy to remember: **LINE**. 
+
+1. Linear - The relationship between your predictor and response is linear. 
+2. Independent - The errors (residuals) are independent (no autocorrelation, pseudo-replication, ect...).
+3. Normal - The errors (residuals) are normally distributed. *NB! - SLR does not assume your raw data are normally distributed, just the errors*
+4. Equality of variance (homogeneity) - At each value of your predictor variable, the variance in your response variable is equal. 
+
+# How do we run a simple linear regression in R?
+
+R has a built-in function called `lm` that is the workhorse used to fit linear models. You can find more information on this function by typing `?lm` into your console. 
+
+The general formula for running a linear regression in R is:
+
+```{r, eval = F}
+model_name <- lm(response ~ predictor, data = data_frame_name)
+```
+
+Let's break this down:
+
+1. We are telling `R` to perform a linear regression by using the `lm` function. 
+2. We are going to store/save our linear regression in a variable called `model_name` using the <- (assign) key. 
+3. We would like to model our `response` variable as a linear function of the `predictor` variable. 
+4. The `data = ...` argument tells `R` where to look for your data. 
+
+# Running your first linear regression in R 
+
+In this next section, we are going to run our first simple linear regression in R. We will need to load in our data, check the data imported correctly, and then we can proceed.
+
+```{r}
+# I have made up some fake data simulating an experiment where we reared female insects at 4 different temperatures, and measured the number of larvae they produced (fecundity). We also measured the body mass of the females (in grams) at the start of the experiment, because we suspect that bigger females may produce more larvae than smaller females. 
+
+# Import data
+data <- readxl::read_excel("./data_raw/poisson_data.xlsx")
+
+# Check data imported properly
+str(data)
+head(data)
+
+```
+
+

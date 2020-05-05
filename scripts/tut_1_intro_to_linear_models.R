@@ -11,7 +11,7 @@
 
 # Load required libraries to run script 
 # You may need to install the package first
-# install.packages("tidyverse") - remove the # from this row and click run. 
+# install.packages("tidyverse") # - remove the # from this row and click run. 
 library(tidyverse)
 
 # I like my plots to look a certain way
@@ -21,9 +21,6 @@ theme_set(theme_classic() +
                   axis.title.x = element_text(margin = unit(c(2, 0, 0, 0), "mm")),
                   axis.title.y = element_text(margin = unit(c(0, 4, 0, 0), "mm")),
                   legend.position = "none"))
-
-# Load required libraries 
-library(tidyverse)
 
 # Import data
 data <- readxl::read_excel("./data_raw/poisson_data.xlsx")
@@ -65,6 +62,14 @@ ggplot(data = data, aes(x = adult_mass,
 
 # Secondly, is your predictor linear-ish?
 hist(data$adult_mass)
+
+# Thirdly, are there outliers in the response variable?
+raw_data <- data %>%
+  mutate(adult_mass = as.factor(adult_mass))
+
+ggplot(data = raw_data, aes(x = adult_mass,
+                            y = larvae)) +
+  geom_boxplot()
 
 ###
 # - Step 2 - Run a linear model
@@ -153,7 +158,7 @@ summary(mod1)
 # Get Type II sum of squares 
 car::Anova(mod1, type="II")
 
-# - (1) Intercept estimate - value of abundance where X (adult_mass) = 0
+# - (1) Intercept estimate - value of y-value (larvae) where X (adult_mass) = 0
 coef(mod1)[[1]]
 
 #       Intercept = 2.39,
@@ -245,7 +250,7 @@ ggplot() +
   # Write x and y axis labels
   labs(x = "Adult body mass (g)",
        y = "No. of larvae produced",
-       subtitle = "Do larger females produce more larvae?")
+       subtitle = "(a)")
 
 ###
 # Step 6 - Write-up your results  

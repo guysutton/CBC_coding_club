@@ -63,16 +63,115 @@ Let's break this down:
 
 In this next section, we are going to run our first simple linear regression in R. We will need to load in our data, check the data imported correctly, and then we can proceed.
 
-```{r}
-# I have made up some fake data simulating an experiment where we reared female insects at 4 different temperatures, and measured the number of larvae they produced (fecundity). We also measured the body mass of the females (in grams) at the start of the experiment, because we suspect that bigger females may produce more larvae than smaller females. 
+I have made up some fake data simulating an experiment where we reared female insects at 4 different temperatures, and measured the number of larvae they produced (fecundity). We also measured the body mass of the females (in grams) at the start of the experiment, because we suspect that bigger females may produce more larvae than smaller females. 
 
+```{r, include = F}
 # Import data
-data <- readxl::read_excel("./data_raw/poisson_data.xlsx")
+data <- readr::read_csv2('https://raw.githubusercontent.com/guysutton/CBC_coding_club/master/data_raw/poisson_data.csv')
 
-# Check data imported properly
-str(data)
-head(data)
+data <- data %>%
+  dplyr::select(-adults)
 
 ```
+
+```{r}
+# Check data imported properly
+head(data)
+```
+
+Our dataset called `data` has 3 columns.
+
+1. `temp` = temperature in degrees celcius. 
+2. `adult_mass` = adult body mass at the start of the experiment (in grams).
+3. `larvae` = no. of larvae she produces during experiment. 
+
+### Step 1: Define your research question or hypothesis
+
+Let's say we were testing: do larger female produce more larvae? 
+* Thus, `larvae` will be our response variable, and `adult_mass` will be our predictor variable. 
+
+### Step 2: Visualise your data and their relationships 
+
+```{r}
+# Firstly, visualise relationship between predictor and response
+ggplot(data = data, aes(x = adult_mass,
+                        y = larvae)) +
+  geom_point()
+```
+
+Remember, to run a simple linear regression, one of our primary assumptions is that the relationship between our predictor and our response is linear. Looking at the graph, we can see what looks like a linear relationship. 
+
+*HINT: This is a good time for you to record any noticable features about your data. For example, are there any outliers? Is the relationship positive or negative? How strong is the relationship? Is there a lot of variation in the data?* 
+Now, we should take a closer look at potential irregularitites in the response and predictor variables. 
+
+```{r}
+# What is the distribution of our predictor variable? 
+hist(data$adult_mass)
+```
+
+We see a pretty flat, normal distribution of female body weights. Make sure there are no gaps in the bars (that would indicate a potential outlier), or any bars that are significantly taller than others. 
+
+```{r}
+# Are there outliers in the response variable?
+# Is there more variation in your response variable at some x-values than others?
+# Firstly, we must make the x-variable into a factor, just to make this graph. 
+raw_data <- data %>%
+  mutate(adult_mass = as.factor(adult_mass))
+
+# Make the plot
+ggplot(data = raw_data, aes(x = adult_mass,
+                            y = larvae)) +
+  geom_boxplot()
+```
+
+Here, we can see quite a few outliers in the response variable (`larvae`), as indicated by the 7 black, filled circles. That is a little concerning.
+
+What should be even more worrying is that the variation in the number of larvae produced for females of certain `adult_mass` values (e.g. 3 and 4g) is much more than at other values (e.g. 2, 6 and 7g). This is a good indication that a your data will not meet the requirements of homogeneity of variance, but more on that later. 
+
+### Step 3: Run your linear model
+
+Now, we are going to finally run our first linear model.
+
+Here, we specify our response variable `larvae` to the left of the `~` and our predictor variable `adult_mass` to the right of the `~`. We also have to remember to tell `R` to look for this data in the dataframe called `data`. We will store our linear model in a variable called `mod1`. Later, we will look at the output of our linear model by telling `R` to show us what is stored in `mod1`. 
+
+```{r}
+# Specify a linear model 
+mod1 <- lm(larvae ~ adult_mass,
+           data = data)
+```
+
+
+
+
+
+
+
+
+
+```{r}
+# Make simulated data with unequal variance - variance increases proportionally with our x variable - use as bad example of homogeneity of variances plots
+set.seed(15)
+n <- 16
+a <- 40  #intercept
+b <- 1.5  #slope
+x <- 1:n  #values of the year covariate
+sigma <- 1.5 * x
+eps <- rnorm(n, mean = 0, sd = sigma)  #residuals
+y <- a + b * x + eps  #response variable
+data.het <- data.frame(y = round(y, 1), x)  #dataset
+head(data.het)  
+
+# Fit the lm to this bad data
+data.het.lm <- lm(y ~ x, data.het)
+
+plot(data.het.lm, which = 1)
+plot(data.het.lm, which = 2)
+plot(data.het.lm, which = 3)
+```
+
+
+
+
+
 
 

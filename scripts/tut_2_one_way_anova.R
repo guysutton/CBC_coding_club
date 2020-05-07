@@ -13,6 +13,7 @@
 # You may need to install the package first
 # install.packages("tidyverse") - remove the # from this row and click run. 
 library(tidyverse)
+library(emmeans)
 
 # I like my plots to look a certain way
 theme_set(theme_classic() +
@@ -21,9 +22,6 @@ theme_set(theme_classic() +
                   axis.title.x = element_text(margin = unit(c(2, 0, 0, 0), "mm")),
                   axis.title.y = element_text(margin = unit(c(0, 4, 0, 0), "mm")),
                   legend.position = "none"))
-
-# Load required libraries 
-library(tidyverse)
 
 # Import data
 data <- readxl::read_excel("./data_raw/poisson_data.xlsx")
@@ -71,6 +69,11 @@ ggplot(data = data, aes(x = temp,
   scale_x_discrete("temp",
                    labels = c("15", "20", "25", "30"))
 
+# First impressions:
+# 1. No. of larvae produced at 15 degrees appears lower than 20, 25, 30, which are quite 
+#    similiar to one another. 
+# 2. Quite a lot of variance, especially at 25 and 30 degrees. 
+
 ###
 # - Step 2 - Run a linear model
 ###
@@ -86,14 +89,7 @@ mod1 <- aov(larvae ~ temp,
            data = data)
 
 # Print ANOVA table
-car::Anova(mod1, type="III")
-
-# More intuitive to break it down into the groups
-mod1 <- lm(larvae ~ temp,
-           data = data)
-
-# Print the summary of the model
-summary(mod1)
+car::Anova(mod1, type="II")
 
 ###
 # Step 3 - Model diagnostics 
@@ -133,10 +129,10 @@ resids <- resid(mod1) # extract model residuals
 hist(resids) # plot a histogram
 
 # Here, we can see that the points in the tails of the line do not deviate from the dashed line
-# - This is an indication that the residuals are normally distributed.
+# - This is an indication that the residuals are approx. normally distributed.
 # - As such, the model does capture the variation in our data well, notably
 #   at the extremities of the dataset 
-# - The histogram further supports that our residuals are normally distributed. 
+# - The histogram further supports that our residuals are approx. normally distributed. 
 # - TAKE HOME: ANOVA may be a good model to use for this analysis. 
 
 # 3. Homogeneity of variance
@@ -145,12 +141,14 @@ hist(resids) # plot a histogram
 #   - Here, we wan't to see that red line lie on the y = 0 line.
 #   - You really don't want to see your white circles have any pattern (i.e. funnel, U-shape)
 plot(mod1, which = 1)
+plot(mod1, which = 3)
 
-# Here, the red line varies a bit, indicating that the variance varies slightly, 
-# but there is nothing for concern. 
-# You would be happy with this as your model satifies the homogeneity of variance assumption. 
-
-# TAKE-HOME: ANOVA IS PROBABLY APPROPRIATE. 
+# Here, the red line varies a bit, indicating that the variance varies slightly,
+# and there is slightly more spread in the points at higher temperatures (right edge of 
+# graph) than lower temperatures (left edge of graph). 
+# - This shouldn't be a suprise - remember what the boxplot looked like earlier? Same same. 
+# Probably requires more interrogation before you would continue with an 
+# anova (i.e. more diagnostics, data transformation), but this is not terrible. 
 
 ###
 # Step 4 - Interpreting model output
@@ -163,7 +161,7 @@ mod1 <- aov(larvae ~ temp,
            data = data)
 car::Anova(mod1, type="II")
 
-#       Here, we see that temp has a P-val of 0.008 (< 0.05)
+#       Here, we see that temp has a P-val of 0.008 (P < 0.05)
 #       Therefore, we can say that there is a significant association between
 #       temperature and no. of larvae produced. 
 
@@ -178,7 +176,7 @@ tukey_res <- TukeyHSD(mod1)
 tukey_res 
 
 #   (2.2) emmeans Tukey test 
-#         - My preference, provides confidence intervals 
+#         - My preference, provides nice output and confidence intervals 
 emm1 <- emmeans(mod1, 
                 specs = pairwise ~ temp,
                 adjust = "tukey")
@@ -210,7 +208,7 @@ ggplot(data = data, aes(x = temp,
   # x = 2 means second group... 
   # Manually play around with y-values
   annotate("text", x = 1, y = 25, label = "a") +
-  annotate("text", x = 2, y = 32, label = "b") +
+  annotate("text", x = 2, y = 32, label = "a") +
   annotate("text", x = 3, y = 37, label = "b") +
   annotate("text", x = 4, y = 41, label = "b")
 
@@ -218,31 +216,12 @@ ggplot(data = data, aes(x = temp,
 # Step 6 - Write-up your results  
 ###
 
-# Everyone has a different style of writing. 
-# Below I give some examples. 
-# Any text within [] is me explaining, and not actually included in the text. 
-# This is my approach, it does not have to be yours. 
-
-# (1) The standard example is:
-# Temperate had a significant influence on the number of larvae produced 
-# (P < 0.05)
-
-# - In my opinion, this is pretty poor. 
-# - It really tells us nothing. 
-
-# (2) Improvement on (1):
-# Temperature had a significant influence on the number of larvae produced 
-# (F = 4.201; P < 0.05). [where F = F-value, not beta like lm]. 
-
-# (3) Actually explain your results.
-#     - This is my prefered approach. 
-
 # Temperature had a significant influence on the number of larvae 
 # produced (F = 4.201; P < 0.05). 
 # Fewer larvae were produced at 15 degrees than 20, 25 and 30 degrees (Fig. 1).
 # Similar numbers of larvae were produced at 20, 25 and 30 degrees. 
 
 # - We have told the reader exactly how the predictor effects response,
-#   we have reported uncertainty, and referred the reader to our awesome graph!!! 
+#   we have reported uncertainty, and referred the reader to our cool graph!!! 
 
 # Your results for your paper are now ready to go!!!

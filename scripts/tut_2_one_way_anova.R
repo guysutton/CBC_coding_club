@@ -14,6 +14,7 @@
 # install.packages("tidyverse") - remove the # from this row and click run. 
 library(tidyverse)
 library(emmeans)
+library(car)
 
 # I like my plots to look a certain way
 theme_set(theme_classic() +
@@ -70,8 +71,8 @@ ggplot(data = data, aes(x = temp,
                    labels = c("15", "20", "25", "30"))
 
 # First impressions:
-# 1. No. of larvae produced at 15 degrees appears lower than 20, 25, 30, which are quite 
-#    similiar to one another. 
+# 1. No. of larvae produced at 15 degrees appears lower than 20, 25, 30, 
+#    which are quite similiar to one another. 
 # 2. Quite a lot of variance, especially at 25 and 30 degrees. 
 
 ###
@@ -86,7 +87,7 @@ ggplot(data = data, aes(x = temp,
 # - We also have to specify where R must look for this data
 #   using the 'data = ...' argument 
 mod1 <- aov(larvae ~ temp,
-           data = data)
+            data = data)
 
 # Print ANOVA table
 car::Anova(mod1, type="II")
@@ -117,7 +118,8 @@ car::Anova(mod1, type="II")
 #    - The assumption is actually that your residuals are normally 
 #      distributed. 
 #      - Residuals are how far each data point deviates 
-#        from the expected value / trend. 
+#        from the expected value / trend (have to fit the model to see this!).
+#        - Residuals = observed value - expected value (from model prediction)
 #    - Residuals represent variation in the data that your model can't account for. 
 #    - We use residual plots to discover patterns (QQ plot).
 #    - We don't want to see any systematic patterns in residuals,
@@ -138,9 +140,11 @@ hist(resids) # plot a histogram
 # 3. Homogeneity of variance
 #   - Testing the assumption of equality of variances. 
 #   - Residuals vs fitted - we don't want to see any pattern.
-#   - Here, we wan't to see that red line lie on the y = 0 line.
+#   - Here, we want to see that red line lie on the y = 0 line.
 #   - You really don't want to see your white circles have any pattern (i.e. funnel, U-shape)
-plot(mod1, which = 1)
+#   - Also, residuals should be within 3 > y > -3
+#     - resids > 0 = underpredicting (observed value > predicted value)
+#     - resids < 0 = overpredicting (observed value < predicted value)
 plot(mod1, which = 3)
 
 # Here, the red line varies a bit, indicating that the variance varies slightly,
@@ -149,6 +153,8 @@ plot(mod1, which = 3)
 # - This shouldn't be a suprise - remember what the boxplot looked like earlier? Same same. 
 # Probably requires more interrogation before you would continue with an 
 # anova (i.e. more diagnostics, data transformation), but this is not terrible. 
+# - But, our residuals > 0, meaning that our model is systematically underpredicting 
+#   the number of larvae
 
 ###
 # Step 4 - Interpreting model output
@@ -157,9 +163,10 @@ plot(mod1, which = 3)
 # - (1) Is my treatment/factor significant?
 #       Look at the row for your predictor variable (here: temp)
 #       Look at the P-value: P <0.05 means this variable is significant 
-mod1 <- aov(larvae ~ temp,
-           data = data)
-car::Anova(mod1, type="II")
+mod1 <- aov(larvae ~ temp, 
+            data = data)
+car::Anova(mod1, 
+           type="II")
 
 #       Here, we see that temp has a P-val of 0.008 (P < 0.05)
 #       Therefore, we can say that there is a significant association between
@@ -179,7 +186,7 @@ tukey_res
 #         - My preference, provides nice output and confidence intervals 
 emm1 <- emmeans(mod1, 
                 specs = pairwise ~ temp,
-                adjust = "tukey")
+                adjust = "bonferroni")
 emm1
 
 # Get 95% confidence intervals 
@@ -196,8 +203,7 @@ emm1$contrasts %>%
 
 # Much easier than plotting the 'lm' results 
 ggplot(data = data, aes(x = temp,
-                        y = larvae,
-                        group = temp)) +
+                        y = larvae)) +
   geom_boxplot() +
   scale_x_discrete("Temperature (ÅãC)",
                    labels = c("15", "20", "25", "30")) +
@@ -208,7 +214,7 @@ ggplot(data = data, aes(x = temp,
   # x = 2 means second group... 
   # Manually play around with y-values
   annotate("text", x = 1, y = 25, label = "a") +
-  annotate("text", x = 2, y = 32, label = "a") +
+  annotate("text", x = 2, y = 32, label = "ab") +
   annotate("text", x = 3, y = 37, label = "b") +
   annotate("text", x = 4, y = 41, label = "b")
 

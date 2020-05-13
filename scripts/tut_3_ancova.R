@@ -9,6 +9,18 @@
 ###########################################################
 ###########################################################
 
+# Load required packages
+library(tidyverse)
+
+
+# I like my plots to look a certain way
+theme_set(theme_classic() +
+            theme(panel.border = element_rect(colour = "black", fill = NA),
+                  axis.text = element_text(colour = "black"),
+                  axis.title.x = element_text(margin = unit(c(2, 0, 0, 0), "mm")),
+                  axis.title.y = element_text(margin = unit(c(0, 4, 0, 0), "mm")),
+                  legend.position = "none"))
+
 ###
 # - Data import and cleaning
 ###
@@ -31,10 +43,17 @@ insect_data <- insect_data %>%
 
 # Here, we set-up an experiment where we inoculated female cochineal insects 
 # onto cactus plants of different lineages (single, multiple, outcrossed).
-# - We measured initial female body mass, and measured her fecundity.
+# - We measured initial female body mass, and measured fecundity.
+# - Single - all insects used originate from one female (WAAINEK CULTURE)
+# - Multiple- all insects used originate from 20 females (WAAINEK CULTURE)
+# - Outcrossed - all insects used originate from field-collected females
+
+# - I expect that genetic diversity is lowest for SINGLE and highest for OUTCROSSED.
+# - Hypothesis: Outcrossed treatment will make the most crawlers, single treatment
+#               will make the fewest crawlers. 
 
 # RESEARCH QUESTION:
-# - Do cochineal insects produce more crawlers on different cactus lineages? 
+# - Do more genetically diverse cochineal insects produce more crawlers? 
    
 ###
 # Step 1 - Explore the data (visualise)
@@ -176,7 +195,7 @@ sjstats::anova_stats(car::Anova(COVmodelError$Within,
   dplyr::select(1:7)
 
 ### etasq = proportion of total variation accounted for by a given factor
-### So, 24.6% (0.246) of the variation in the number of crawlers 
+### So, 21.2% (0.212) of the variation in the number of crawlers 
 ### being produced was accounted for by 'lineage'. 
 
 ###
@@ -255,12 +274,12 @@ ggplot(data = fit, aes(x = mass_start,
 #            - The plot shows that there may infact be a significant effect.
 
 # *** BIIIIIG TAKE HOME MESSSAGE:
-#     - Approximately 25% of the variation in crawler output 
+#     - Approximately 20% of the variation in crawler output 
 #       was due to lineage, after controlling for differences in body mass.
 #       - Use the biological significance of the result to guide you. 
 #       - e.g. if the point of your study was to determine which cactus to 
-#         mass rear a cochineal insect on, 25% difference could 
-#         mean 1 million insects versus 0.75 million insects per year
+#         mass rear a cochineal insect on, 2% difference could 
+#         mean 1 million insects versus 0.8 million insects per year
 #         - Statsitical significance aside, 
 #           that is a BIOLOGICALLY / ECONOMICALLY SIGNIFICANT result! 
  

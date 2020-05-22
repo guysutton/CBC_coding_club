@@ -12,7 +12,6 @@
 # Load required packages
 library(tidyverse)
 
-
 # I like my plots to look a certain way
 theme_set(theme_classic() +
             theme(panel.border = element_rect(colour = "black", fill = NA),
@@ -54,6 +53,14 @@ insect_data <- insect_data %>%
 
 # RESEARCH QUESTION:
 # - Do more genetically diverse cochineal insects produce more crawlers? 
+
+# What is ANCOVA?
+# - Analysis of co-variance
+#   - Extension of one-way anova
+#   - Still trying to see whether our numeric response variable means differ 
+#   - Here, we first adjust for a numeric covariate,
+#     before determining whether our covariate of interest is significant or not. 
+#   - An example will make this clearer. 
    
 ###
 # Step 1 - Explore the data (visualise)
@@ -129,7 +136,8 @@ ggplot(data = insect_data, aes(x = mass_start,
 # - 1. Were females different sizes when applying the treatments?
 #      - Initial body mass certainly looked to be larger in some lineages. 
 #      - Perform an analysis of variance to compare 
-fem_diff_aov <- aov(mass_start ~ lineage, data = insect_data)
+fem_diff_aov <- aov(mass_start ~ lineage, 
+                    data = insect_data)
 
 # Get type II sum of squares 
 car::Anova(fem_diff_aov, type = 2)
@@ -161,7 +169,8 @@ car::Anova(craw_aov, type = 2)
 #      - Here, we are going to test whether lineage had an effect on 
 #        the number of crawlers produced, after controlling for 
 #        female body size at the start of the experiment (mass_start)
-mod_int <- aov(crawlers_total ~ lineage * mass_start, data = insect_data)
+mod_int <- aov(crawlers_total ~ lineage * mass_start, 
+               data = insect_data)
 summary(mod_int)
 
 # Get Type III errors (NOT TYPE II LIKE ANOVA)
@@ -171,6 +180,7 @@ car::Anova(mod_int, type="III")
 
 # Look at the difference in output when type II errors used like ANOVA
 car::Anova(mod_int, type="II")
+summary(mod_int)
 
 # - When we use type III (correct choice) - lineage is not significant, 
 #   after controlling for starting mass.
@@ -195,7 +205,7 @@ sjstats::anova_stats(car::Anova(COVmodelError$Within,
   dplyr::select(1:7)
 
 ### etasq = proportion of total variation accounted for by a given factor
-### So, 21.2% (0.212) of the variation in the number of crawlers 
+### So, 24.6% (0.246) of the variation in the number of crawlers 
 ### being produced was accounted for by 'lineage'. 
 
 ###
@@ -213,7 +223,7 @@ mod.lm <- lm(crawlers_total ~ lineage * mass_start,
 newdata <- expand.grid(lineage = levels(insect_data$lineage), 
                        mass_start = seq(min(insect_data$mass_start), 
                                         max(insect_data$mass_start),
-                               l = 10))
+                               l = 100))
 fit <- predict(mod.lm, newdata = newdata, interval = "confidence")
 fit <- data.frame(newdata, fit)
 part.obs <- cbind(insect_data, 
@@ -277,8 +287,8 @@ ggplot(data = fit, aes(x = mass_start,
 #     - Approximately 20% of the variation in crawler output 
 #       was due to lineage, after controlling for differences in body mass.
 #       - Use the biological significance of the result to guide you. 
-#       - e.g. if the point of your study was to determine which cactus to 
-#         mass rear a cochineal insect on, 2% difference could 
+#       - e.g. if the point of your study was to determine how to start cultures 
+#         to mass rear a cochineal insect on, 20% difference could 
 #         mean 1 million insects versus 0.8 million insects per year
 #         - Statsitical significance aside, 
 #           that is a BIOLOGICALLY / ECONOMICALLY SIGNIFICANT result! 

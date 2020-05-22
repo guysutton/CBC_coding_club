@@ -16,6 +16,8 @@
 #      - i) All records
 #      - ii) Presence/absence per quarter degree grid cell (like SAPIA maps)
 #      - iii) Abundance per quarter degree grid cell
+# - 4. Combine two maps into a single figure
+# - 5. Save images from R to your PC (NB!!!)
 ############################################################
 
 # Load required libraries
@@ -32,7 +34,7 @@ library(tidyr)
 library(stringr) 
 
 #################################################
-# Section 1: Downloading GPS occurences from GBIF
+# Section 1: Downloading GPS occurences from GBIF - single species
 #################################################
 
 # 1. Downloading GPS for a single species 
@@ -63,21 +65,25 @@ df_comb <- df_comb %>%
   dplyr::select(plant_species, longitude, latitude)
 df_comb
 
+#################################################
+# Section 2: Downloading GPS occurences from GBIF - multiple species
+#################################################
+
 # 2. Downloading GPS for multiple species in same genus 
 #    - Extract all Opuntia spp. records from GBIF 
 #    - Limit to only South African records
 
-# - Limit to only South African records
+# Limit to only South African records
 gbifopts <- list(country = "ZA") 
 
-# - Now extract records
+# Now extract records
 df <- occ(query = "Opuntia", 
           from = c("gbif"),
           gbifopts = gbifopts,
           limit = 10000)
 df
 
-# - Process data 
+# Process data 
 df_comb <- occ2df(df)
 df_comb
 df_comb<- dframe(df_comb) %>%
@@ -99,9 +105,9 @@ df_comb
 # Which species do we have in our dataset? 
 df_comb %>% count(plant_species)
 
-###
-# Section 2: Make basic maps
-###
+#################################################
+# Section 3: Make basic distribution maps
+#################################################
 
 # DISCLAIMER: 
 # - These are my own personal functions that I have written.
@@ -115,7 +121,7 @@ devtools::source_url("https://raw.githubusercontent.com/guysutton/sapia_type_map
 
 # Data format required:
 # Data frame (check using class(object_name))
-# Must have a column called 'plant_species' containing species names
+# Must have a column containing species names
 # Must have latitude and longitude column, pay attention to capitalisation
 # Must be: longitude, latitude, not lat/long, Longitude/Latitude
 head(df_comb)
@@ -124,6 +130,8 @@ head(df_comb)
 map_sapia(data = df_comb, 
           # Which map do you want?
           map_type = "all",
+          # Which column contains the species to plot
+          col = plant_species,
           # Which species should we plot? 
           species = c("Opuntia ficus-indica"))
 
@@ -136,6 +144,8 @@ ggsave("./figures/tut3_all_records_map.png",
 map_sapia(data = df_comb, 
           # Which map do you want?
           map_type = "presence",
+          # Which column contains the species to plot
+          col = plant_species,
           # Which species should we plot? 
           species = "Opuntia ficus-indica")
 
@@ -148,6 +158,8 @@ ggsave("./figures/tut3_pres_abs_map.png",
 map_sapia(data = df_comb, 
           # Which map do you want?
           map_type = "abundance",
+          # Which column contains the species to plot
+          col = plant_species,
           # Which species should we plot? 
           species = "Opuntia ficus-indica")
 
@@ -157,9 +169,9 @@ ggsave("./figures/tut3_abundance_map.png",
        dpi = 600)
 
 
-###
-# - Plot multiple maps together in same figure 
-###
+#################################################
+# Section 4: Combine maps in single figure
+#################################################
 
 # Let's say we want to plot two maps, one for O. ficus-indica,
 # and one for O. stricta in the same figure. 
@@ -168,6 +180,8 @@ ggsave("./figures/tut3_abundance_map.png",
 map_ficus <- map_sapia(data = df_comb, 
                        # Which map do you want? 
                        map_type = "presence", 
+                       # Which column contains the species to plot
+                       col = plant_species,
                        # Which species should we plot? 
                        species = "Opuntia ficus-indica") + 
   labs(title = "(a)")
@@ -175,6 +189,8 @@ map_ficus <- map_sapia(data = df_comb,
 map_stricta <- map_sapia(data = df_comb, 
                          # Which map do you want? 
                          map_type = "presence", 
+                         # Which column contains the species to plot
+                         col = plant_species,
                          # Which species should we plot? 
                          species = "Opuntia stricta") +
   labs(title = "(b)")
@@ -189,3 +205,4 @@ ggsave("./figures/tut3_combined_map.png",
        width = 15,
        height = 10,
        dpi = 600)
+

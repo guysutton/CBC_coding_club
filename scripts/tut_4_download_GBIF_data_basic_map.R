@@ -18,6 +18,7 @@
 #      - iii) Abundance per quarter degree grid cell
 # - 4. Combine two maps into a single figure
 # - 5. Save images from R to your PC (NB!!!)
+# - 6. Import your own GPS coords and plot maps 
 ############################################################
 
 # This new line of code should install and load all the packages you require
@@ -145,7 +146,7 @@ head(df_comb)
 # 1. Plot all GPS records for O. ficus-indica
 map_sapia(data = df_comb, 
           # Which map do you want?
-          map_type = "all",
+          map_type = "abundance",
           # Which column contains the species to plot
           col = plant_species,
           # Which species should we plot? 

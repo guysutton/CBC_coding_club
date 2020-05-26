@@ -33,6 +33,15 @@ library(dplyr)
 library(tidyr)
 library(stringr) 
 
+# These are required to run map_sapia function
+library(tidyverse)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(rlang)
+library(ggspatial)
+library(raster)
+
 #################################################
 # Section 1: Downloading GPS occurences from GBIF - single species
 #################################################
@@ -53,12 +62,14 @@ df <- occ(query = "Opuntia stricta",
 df
 
 # Process data 
-df <- fixnames(df, how = 'shortest')
+df <- fixnames(df, 
+               how = 'shortest')
 df_comb <- occ2df(df)
 df_comb <- dframe(df_comb) %>%
   coord_impossible() %>%
   coord_incomplete() %>%
   coord_unlikely()
+
 df_comb$name <- "Opuntia stricta"
 df_comb$plant_species <- df_comb$name
 df_comb <- df_comb %>%
@@ -82,6 +93,13 @@ df <- occ(query = "Opuntia",
           gbifopts = gbifopts,
           limit = 10000)
 df
+
+# What about records for different genera? 
+#df <- occ(query = c("Opuntia stricta", "Acacia cyclops"), 
+#          from = c("gbif"),
+#          gbifopts = gbifopts,
+#          limit = 10000)
+#df
 
 # Process data 
 df_comb <- occ2df(df)
@@ -161,7 +179,7 @@ map_sapia(data = df_comb,
           # Which column contains the species to plot
           col = plant_species,
           # Which species should we plot? 
-          species = "Opuntia ficus-indica")
+          species = "Opuntia ficus-indica") 
 
 ggsave("./figures/tut3_abundance_map.png",
        width = 8,
@@ -179,7 +197,7 @@ ggsave("./figures/tut3_abundance_map.png",
 # Assign each map to a variable 
 map_ficus <- map_sapia(data = df_comb, 
                        # Which map do you want? 
-                       map_type = "presence", 
+                       map_type = "abundance", 
                        # Which column contains the species to plot
                        col = plant_species,
                        # Which species should we plot? 
@@ -188,7 +206,7 @@ map_ficus <- map_sapia(data = df_comb,
 
 map_stricta <- map_sapia(data = df_comb, 
                          # Which map do you want? 
-                         map_type = "presence", 
+                         map_type = "abundance", 
                          # Which column contains the species to plot
                          col = plant_species,
                          # Which species should we plot? 
@@ -197,8 +215,8 @@ map_stricta <- map_sapia(data = df_comb,
 
 # Plot maps on same figure 
 library(cowplot)
-plot_grid(map_ficus, 
-          map_stricta)
+cowplot::plot_grid(map_ficus, 
+                   map_stricta)
 
 # Save map to PC
 ggsave("./figures/tut3_combined_map.png",
@@ -206,3 +224,34 @@ ggsave("./figures/tut3_combined_map.png",
        height = 10,
        dpi = 600)
 
+#################################################
+# Section 5: Mapping your own data 
+#################################################
+
+# Import your own GPS records
+bp_gps <- readxl::read_xlsx("./data_raw/peppertree_gps.xlsx")
+
+# Check data import
+head(bp_gps)
+
+# Process data to usable format
+bp_gps_clean <- bp_gps %>%
+  # Clean column names
+  janitor::clean_names() %>%
+  # Change character columns to numeric
+  dplyr::mutate(latitude = as.numeric(latitude),
+                longitude = as.numeric(longitude),
+                plant_species = "Schinus terebinthifolia")
+head(bp_gps_clean)
+
+# Now make maps 
+map_sapia(data = bp_gps_clean, 
+          col = plant_species,
+          species = "Schinus terebinthifolia",
+          map_type = "abundance") 
+
+# Save map to PC
+ggsave("./tables/tut3_schinus_pres_map.png",
+       width = 8,
+       height = 6,
+       dpi = 600)

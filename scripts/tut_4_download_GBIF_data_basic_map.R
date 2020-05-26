@@ -20,27 +20,25 @@
 # - 5. Save images from R to your PC (NB!!!)
 ############################################################
 
-# Load required libraries
-library(tidyverse)
-library(spocc)
-library(ggmap)
-library(maptools)
-library(maps)
-library(ggplot2) 
-library(scrubr)
-library(mapr)
-library(dplyr)
-library(tidyr)
-library(stringr) 
-
-# These are required to run map_sapia function
-library(tidyverse)
-library(sf)
-library(rnaturalearth)
-library(rnaturalearthdata)
-library(rlang)
-library(ggspatial)
-library(raster)
+# This new line of code should install and load all the packages you require
+# No need to call library(package_name) - pacman does this for us 
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, 
+               spocc, 
+               ggmap, 
+               maptools, 
+               maps, 
+               ggplot2,
+               scrubr, 
+               mapr, 
+               tidyr, 
+               stringr,
+               rnaturalearth, 
+               rnaturalearthdata, 
+               rlang, 
+               sf, 
+               ggspatial,
+               raster)
 
 #################################################
 # Section 1: Downloading GPS occurences from GBIF - single species
@@ -255,3 +253,26 @@ ggsave("./tables/tut3_schinus_pres_map.png",
        width = 8,
        height = 6,
        dpi = 600)
+
+# Just leaving these here for now
+# Load required libraries
+library(tidyverse)
+library(spocc)
+library(ggmap)
+library(maptools)
+library(maps)
+library(ggplot2) 
+library(scrubr)
+library(mapr)
+library(dplyr)
+library(tidyr)
+library(stringr) 
+
+# These are required to run map_sapia function
+library(tidyverse)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(rlang)
+library(ggspatial)
+library(raster)

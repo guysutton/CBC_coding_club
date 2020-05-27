@@ -67,9 +67,9 @@ head(data)
 # Why is a linear model not appropriate? 
 ggplot(data = data, aes(x = altitude,
                         y = occ)) +
-  geom_point()
-
-# Where would we fit the linear model trend line??? 
+  geom_point() + 
+  # What if we fitted a linear model? 
+  geom_smooth(method = "lm")
 
 # Let's say we did a linear model, how would it fare?
 alt.lm <- lm(occ ~ altitude, data = data)

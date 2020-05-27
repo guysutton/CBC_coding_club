@@ -185,7 +185,6 @@ ggsave("./figures/tut3_abundance_map.png",
        height = 6,
        dpi = 600)
 
-
 #################################################
 # Section 4: Combine maps in single figure
 #################################################

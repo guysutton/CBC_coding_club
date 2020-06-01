@@ -32,7 +32,7 @@ theme_set(theme_classic() +
 ###
 # - What is a logistic regression?
 ###
-# - Logistic regression (i.e.logit model, binomial regression)
+# - Logistic regression (i.e. logit model, binomial regression)
 #   is used to model a dichotomous outcome variable. 
 #   - For example, presence/absense, 1/0, yes/no, dead/alive,
 # - In contrast to lm and other glm's, logistic regression models 
@@ -81,7 +81,7 @@ plot(alt.lm, which = 2)
 plot(alt.lm, which = 3) # massive concern
 
 # Plot 1 + 3 are a massive concern - red line should be flat around the y = 0 line.
-# This model is going to significantly overpredict presence in the 
+# This model is going to significantly underpredict presence in the 
 # middle of the data (i.e. at altitudes of 700-900m). 
 
 ###
@@ -129,7 +129,7 @@ plotResiduals(alt.res)
 # - As x-vals increase, y vals increase a bit.
 # - Bold lines always above our expected values of 0.25, 0.50, 0.75
 #   - Taken together, our model is displaying some heterogeneity in variance,
-#     and will systematically overpredict probability of recording focal species,
+#     and will systematically underpredict probability of recording focal species,
 #     BUT: The adjusted quantine test = n.s. here, so not bad enough to be too worried.
 #   - Just keep slight issues in mind when interpreting model output. 
 
@@ -155,7 +155,7 @@ exp(coef(alt.glm)[2])
 # being present increases by a factor of 0.99. 
 # WHAT ON EARTH DOES THAT MEAN? 
 
-# Let's rather make our outcomes odds-ratios (this process should look familiar)
+# Let's rather make our outcomes odds-ratios
 # - Let's add 95% CI's while we are at it. 
 exp(cbind(OR = coef(alt.glm), confint(alt.glm)))
 
@@ -186,6 +186,7 @@ ndata <- cbind(ndata, predict(alt.glm,
                               newdata = ndata, 
                               type = "link",
                               se = TRUE))
+ndata
 
 # Convert (backtransform) these data using 'plogis' and 'se_fit' 
 ndata <- ndata %>%

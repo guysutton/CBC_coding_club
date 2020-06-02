@@ -80,7 +80,12 @@ plot(alt.lm, which = 1)
 plot(alt.lm, which = 2)
 plot(alt.lm, which = 3) # massive concern
 
-# Plot 1 + 3 are a massive concern - red line should be flat around the y = 0 line.
+# Plot 1 + 3 are a massive concern - 
+# Red line should be flat around the y = 0 line.
+# - 1. Look at shape of the red line - should be horizontal
+# - 2. Look at y-intercept of red line
+#      - y values < 0 = overprediction of outcome variable
+#                 > 0 = underprediction of outcome variable 
 # This model is going to significantly underpredict presence in the 
 # middle of the data (i.e. at altitudes of 700-900m). 
 
@@ -191,9 +196,9 @@ ndata
 # Convert (backtransform) these data using 'plogis' and 'se_fit' 
 ndata <- ndata %>%
   mutate(pred_prob = plogis(fit),
-         lower_ci = plogis(fit - (1.96 * se.fit)),
-         upper_ci = plogis(fit + (1.96 * se.fit)))
-ndata
+         lower_ci  = plogis(fit - (1.96 * se.fit)),
+         upper_ci  = plogis(fit + (1.96 * se.fit)))
+head(ndata)
 
 # Make the plot
 ggplot(data = ndata) +

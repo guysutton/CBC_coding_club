@@ -23,7 +23,8 @@ library(tidyr)
 library(dplyr)
 
 # Import data
-data <- readxl::read_excel("./data_raw/messy_data.xlsx")
+#data <- readxl::read_excel("./data_raw/messy_data.xlsx")
+data <- readr::read_csv2("https://raw.githubusercontent.com/guysutton/CBC_coding_club/master/data_raw/messy_data.csv")
 
 # Check data imported properly
 str(data)
@@ -227,6 +228,113 @@ data %>%
 ### - Verb #3 dplyr::filter = select but for rows, not columns 
 ##############################################################
 
+# (i) Filter rows based on a numeric variable 
+#     - Familiar math operators for this are >, >=, <, <=, == 
+#       and != (not equal to)
+#     - Here, filter rows where insect_sp1 is greater than 8. 
+data %>%
+  dplyr::filter(insect_sp1 > 8)
 
+# (ii) Filter rows between two numeric values
+#      - Here filter rows where insect_sp1 is between 1 and 8. 
+data %>%
+  dplyr::filter(between(insect_sp1, 1, 8))
 
+# (iii) Filter rows based on an exact character match 
+#       - Here, filter rows for Lantana camara only 
+#       - Note the use of == 
+data %>%
+  dplyr::filter(plant_species == "Lantana camara")
 
+# (iv) Filter rows matching multiple character matches 
+#      - Not ideal for this dataset, but say we had lots of plant
+#        species and only wanted Lantana camara and Lantana urtica 
+#      - Note the use of %in% - i.e. look for these characters 
+#        in plant_species column. 
+data %>%
+  dplyr::filter(plant_species %in% c("Lantana camara",
+                                     "Lantana urtica"))
+
+# (v) Filter rows not including a match 
+#     - Here, lots filter all the plant species, except Lantana camara 
+data %>%
+  dplyr::filter(plant_species != "Lantana camara")
+
+# (vi) Filter rows not including a match for multipe characters (exception)
+#      - Say we wanted to remove 2018 and 2019 years, and only keep 2017 data 
+data %>%
+  dplyr::filter(year !%in% c("2018",
+                             "2019")) # !%in% is not a valid operator
+
+data %>%
+  dplyr::filter(!year %in% c("2018",
+                             "2019"))
+
+# (vii) Filter rows based on regex (regular expressions)
+#       - Say we wanted to filter rows containing 'Lantana' only, 
+#         let's just assume there are species other than Lantana in the data. 
+#       - We say filter within plant_species column, and only return rows
+#         where the character string 'Lantana' is present. 
+data %>%
+  dplyr::filter(str_detect(plant_species, "Lantana"))
+
+# (viii) Filter based on multiple conditions 
+
+# Example 1: Filter for 2017 data for Lantana urtica only 
+data %>%
+  dplyr::filter(year == "2017" & plant_species == "Lantana urtica")
+
+# Example 2" Filter for 2017 data and where insect_sp1 abundance was not 0
+data %>%
+  dplyr::filter(year == "2017" & insect_sp1 != 0)
+
+##############################################################
+### - Verb #4 +5 dplyr::group_by and summarise = produce summary stats for groups 
+##############################################################
+
+# (i) Basic use 
+#     - Here, we want to calculate mean insect_abundance for different years
+data %>%
+  group_by(year) %>%
+  dplyr::summarise(mean_sp1 = mean(insect_sp1))
+
+#     - Another example. calculate min insect_abundance for different years
+#       and plant species. 
+data %>%
+  group_by(year, plant_species) %>%
+  dplyr::summarise(min_sp1 = min(insect_sp1))
+
+# (ii) Can produce multiple statistics at once 
+#     - Here, we want to calculate mean and sd insect_abundance 
+#       for different years
+data %>%
+  group_by(year) %>%
+  dplyr::summarise(mean_sp1 = mean(insect_sp1),
+                   sd_sp1   = sd(insect_sp1))
+
+# (iii) Summarise across multiple columns 
+#       - Here, we want to calculate mean insect_abundance 
+#         for different years, for each insect sp individually 
+data %>%
+  group_by(year) %>%
+  dplyr::summarise(across(insect_sp1:insect_sp2, mean))
+
+# (iii) Summarise multiple variables across multiple columns 
+#       - Here, we want to calculate mean and sd insect_abundance 
+#         for different years, for each insect sp individually 
+#       - Note the use of list to specify whihc summary statistics we want. 
+data %>%
+  group_by(year) %>%
+  dplyr::summarise(across(insect_sp1:insect_sp2, list(mean = mean,
+                                                      sd = sd)))
+
+# What if we wanted these stats across years and plant_species? 
+data %>%
+  group_by(year, plant_species) %>%
+  dplyr::summarise(across(insect_sp1:insect_sp2, list(mean = mean,
+                                                      sd = sd)))
+
+a <- data %>%
+  group_by(year, plant_species) %>%
+  dplyr::summarise(across(insect_sp1:insect_sp2, list(mean = mean,
+                                                      sd = sd)))

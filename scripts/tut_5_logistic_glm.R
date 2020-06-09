@@ -47,7 +47,7 @@ theme_set(theme_classic() +
 ###
 
 # Import data
-data <- readxl::read_excel("./data_raw/binomial_data.xlsx")
+#data <- readxl::read_excel("./data_raw/binomial_data.xlsx")
 data <- readr::read_csv2("https://raw.githubusercontent.com/guysutton/CBC_coding_club/master/data_raw/binomial_data.csv")
 
 # Check data imported properly

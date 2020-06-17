@@ -20,7 +20,8 @@
 # Load required libraries
 library(tidyverse)
 library(tidyr)
-library(dplyr)
+library(dplyr) # dplyr 1.0.0. 
+# citation("dplyr")
 
 # Import data
 #data <- readxl::read_excel("./data_raw/messy_data.xlsx")
@@ -33,7 +34,7 @@ head(data)
 # This data is a MESS!!! We need to clean this before we can do anything. 
 
 ###
-# - Some teaster tricks 
+# - Some teaser tricks 
 ###
 
 # 1. Broad-scale cleaning of column names
@@ -51,8 +52,10 @@ head(data)
 # 3. Site and year are in the same column - 
 #    - tidyr::seperate to split into two columns
 data <- data %>%
-  # Split column site_year into two columns, called site and year, separating based on the _. 
-  tidyr::separate(site_year, c("site", "year"), "_")
+  # Split column site_year into two columns, called site and year, 
+  # separating based on the '_' character. 
+tidyr::separate(site_year, c("site", "year"), "_")
+  # "c(_" | " ")
 head(data)
 
 ##############################################################
@@ -77,19 +80,23 @@ data %>%
 #      - Some common examples below. 
 
 # - To select a chunk of columns, use start_col:end_col syntax
+#   - Select all the columns from site to month
 data %>%
   dplyr::select(site:month)
 
 # - Can combine chunks and individual columns
+# - Select all the columns from site to month, and insect_sp1
 data %>%
   dplyr::select(site:month, insect_sp1)
 
 # - We can also deselect columns by adding a minus sign in 
 #   front of the column name. 
+# - Let's deselect (drop) the month column
 data %>%
   dplyr::select(-month)
 
 # - We can also deselect chunks of columns.
+# - Deselect columns from site:plant_number
 data %>%
   dplyr::select(-site:plant_number)
 
@@ -111,6 +118,7 @@ data %>%
 #         - contains() in your select statement.
 
 # - Select using starts_with()
+# - e.g. Let's select only the columns starting with 'insect_'
 data %>%
   dplyr::select(starts_with("insect_"))
 
@@ -126,6 +134,7 @@ data %>%
   dplyr::select(contains("_sp"), -plant_species)
 
 # (iv) Selecting columns based on their data type
+# - Select only the numeric data columns
 data %>%
   dplyr::select(where(is_numeric))
 
@@ -136,6 +145,7 @@ data %>%
 
 # Select all the columns after some column, 
 # wihtout specifying last column name 
+# - Select year and and then site to end of dataframe using ncol(.)
 data %>%
   dplyr::select(year, site:ncol(.))
 
@@ -158,31 +168,45 @@ data %>%
 
 # (i) Basic use
 #     - 1. Make a new column
+#     - Here, make a column indicating if insect_sp1 was present (i.e. > 0)
 data %>%
   dplyr::mutate(sp1_present = insect_sp1 > 0) %>%
   select(insect_sp1, sp1_present)
 
 #     - 2. Update an existing column 
+#     - Let's add 1-year to each year. (eg. 2018 > 2019)
 data %>%
+  dplyr::mutate(year = as.numeric(year)) %>%
   dplyr::mutate(year = year + 1)
 
+# Base R version
+# data$year <- as.numeric(data$year)
+
 # (ii) Row-wise calculations 
+# - e.g. Let's calculate total insect abundance (across all species)
 data %>%
   dplyr::mutate(total_ins_abun = sum(insect_sp1, insect_sp2)) %>%
   select(insect_sp1, insect_sp2, total_ins_abun)
 
+# Not right, hey? 
+
+# Must add rowwise() argument to tell R to calculate by row
 data %>%
-  # Must add rowwise() %>%
   rowwise() %>%
   dplyr::mutate(total_ins_abun = sum(insect_sp1, insect_sp2)) %>%
   select(insect_sp1, insect_sp2, total_ins_abun)
 
-# (iii) ifelse
+# (iii) ifelse function
+# - If x, then x, if not x, then y
+# - e.g. if insect_sp1 > 0, say 1, otherwise say 0
 data %>%
   dplyr::mutate(insect_sp1_present = ifelse(insect_sp1 > 0, 1, 0)) %>%
   dplyr::select(insect_sp1, insect_sp1_present)
 
 # (iv) ifelse for > 2 conditions 
+# - e.g. if insect_sp1 = 0, say absent,
+#                      > 0 but < 6, say present,
+#                      > 6, then say abundant
 data %>%
   dplyr::mutate(insect_sp1_abundance = case_when(
     insect_sp1 == 0 ~ "Absent",
@@ -212,17 +236,23 @@ data %>%
   dplyr::mutate(total_abun = sum(across(starts_with("insect_")))) %>%
   dplyr::select(insect_sp1:total_abun)
 
-# - Count distinct levels within multiple factors (more on summarise later) 
+# - Count distinct levels within multiple factors  
 data %>%
   dplyr::summarise(across(where(is.character), n_distinct))
 
 # (vi) Recoding factor variable levels 
-data %>%
-  dplyr::count(plant_species) %>%
+a <- data %>%
+  #dplyr::count(plant_species) %>%
   dplyr::mutate(plant_species = recode(plant_species,
                                        "Lantana camara" = "Lantana camara",
                                        "Lantana urtica" = "Lantana sp. 1"))
 
+data %>%
+  dplyr::mutate(month = recode(month,     
+                              "Jan" = "January")) %>%
+  dplyr::distinct(month)
+
+##################### End of session # 1 #####################
 
 ##############################################################
 ### - Verb #3 dplyr::filter = select but for rows, not columns 

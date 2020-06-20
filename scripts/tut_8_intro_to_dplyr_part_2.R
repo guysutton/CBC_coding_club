@@ -1,9 +1,9 @@
 ###########################################################
 ###########################################################
 # - CBC Coding Club
-# - Tutorial #6: Intro to dplyr
+# - Tutorial #8: Intro to dplyr (part #2)
 # - Rhodes Universtiy
-# - Script written: 02/06/2020
+# - Script written: 19/06/2020
 # - By: Guy F. Sutton
 ###########################################################
 ###########################################################
@@ -11,9 +11,9 @@
 ###########################################################
 # Aims:
 # - 1. Learn basic dplyr verbs for data processing
-# - 2. Select specific columns
-# - 3. Filter specific rows
-# - 4. Make new or edit existing columns
+# - 2. Understand what the pipe operator does
+# - 3. Understand how to make conditional columns 
+# - 4. Group your data 
 # - 5. Produce basic summary statistics across groups 
 ############################################################
 
@@ -54,151 +54,13 @@ head(data)
 data <- data %>%
   # Split column site_year into two columns, called site and year, 
   # separating based on the '_' character. 
-tidyr::separate(site_year, c("site", "year"), "_")
-  # "c(_" | " ")
+  tidyr::separate(site_year, c("site", "year"), "_")
+# "c(_" | " ")
 head(data)
 
-##############################################################
-# - The basic 'verbs' of dplyr 
-##############################################################
-
-head(data)
-
-##############################################################
-### - Verb #1 dplyr::select = select columns of interest
-##############################################################
-
-# (i) Basic use
-#     - To select a few columns just add their names in the select 
-#     - The order in which you add them, will determine the order
-#       in which they appear in the output.
-data %>%
-  dplyr::select(site, insect_sp1)
-
-# (ii) Using chunks to save typing many column names.
-#      - There are many ways to do this,
-#      - Some common examples below. 
-
-# - To select a chunk of columns, use start_col:end_col syntax
-#   - Select all the columns from site to month
-data %>%
-  dplyr::select(site:month)
-
-# - Can combine chunks and individual columns
-# - Select all the columns from site to month, and insect_sp1
-data %>%
-  dplyr::select(site:month, insect_sp1)
-
-# - We can also deselect columns by adding a minus sign in 
-#   front of the column name. 
-# - Let's deselect (drop) the month column
-data %>%
-  dplyr::select(-month)
-
-# - We can also deselect chunks of columns.
-# - Deselect columns from site:plant_number
-data %>%
-  dplyr::select(-site:plant_number)
-
-# Hmmmm. Not what you expected, right? 
-
-# - To deselect column chunks, we must put columns into brackets
-data %>%
-  dplyr::select(-c(site:plant_number))
-
-# - Deselect multiple columns 
-data %>%
-  dplyr::select(-c(site, plant_number))
-
-# (iii) Selecting columns based on partial column names
-#       - If you have a lot of columns with a similar structure,
-#         you can use partial matching by adding:
-#         - starts_with(),
-#         - ends_with() or 
-#         - contains() in your select statement.
-
-# - Select using starts_with()
-# - e.g. Let's select only the columns starting with 'insect_'
-data %>%
-  dplyr::select(starts_with("insect_"))
-
-# - Select using ends_with() - not really helpful in this dataset
-data %>%
-  dplyr::select(ends_with("e"))
-
-# - Select using contains()
-data %>%
-  dplyr::select(contains("_sp"))
-
-data %>%
-  dplyr::select(contains("_sp"), -plant_species)
-
-# (iv) Selecting columns based on their data type
-# - Select only the numeric data columns
-data %>%
-  dplyr::select(where(is_numeric))
-
-# (v) Reorder columns 
-#     - Order of items in select will determine placement 
-data %>%
-  dplyr::select(year, site:insect_sp2)
-
-# Select all the columns after some column, 
-# wihtout specifying last column name 
-# - Select year and and then site to end of dataframe using ncol(.)
-data %>%
-  dplyr::select(year, site:ncol(.))
-
-# (vi) Rename some column names 
-data %>%
-  dplyr::select(site, 
-                year, 
-                month, 
-                insect_sp1)
-
-data %>%
-  dplyr::select(site, 
-                year, 
-                month, 
-                insect_sp3 = insect_sp1)
-
-##############################################################
-### - Verb #2 dplyr::mutate = manipulating columns 
-##############################################################
-
-# (i) Basic use
-#     - 1. Make a new column
-#     - Here, make a column indicating if insect_sp1 was present (i.e. > 0)
-data %>%
-  dplyr::mutate(sp1_present = insect_sp1 > 0) %>%
-  select(insect_sp1, sp1_present)
-
-#     - 2. Update an existing column 
-#     - Let's add 1-year to each year. (eg. 2018 > 2019)
-data %>%
-  dplyr::mutate(year = as.numeric(year)) %>%
-  dplyr::mutate(year = year + 1)
-
-# Base R version
-# data$year <- as.numeric(data$year)
-
-# (ii) Row-wise calculations 
-# - e.g. Let's calculate total insect abundance (across all species)
-data %>%
-  dplyr::mutate(total_ins_abun = sum(insect_sp1, insect_sp2)) %>%
-  select(insect_sp1, insect_sp2, total_ins_abun)
-
-# Not right, hey? 
-
-# Must add rowwise() argument to tell R to calculate by row
-data %>%
-  rowwise() %>%
-  dplyr::mutate(total_ins_abun = sum(insect_sp1, insect_sp2)) %>%
-  select(insect_sp1, insect_sp2, total_ins_abun)
-
-##########################################################################
-# - REFRESHER ON USING CONDITIONAL STATEMENTS
-##########################################################################
+######################################################################
+# 1. USING THE PIPE OPERATOR -----------------------------------------
+######################################################################
 
 # Firstly, I want to go over what the pipe (%>%) operator does.
 # The pipe allows us to put multiple arguments together (i.e. chain together)
@@ -232,7 +94,10 @@ data %>% # and then...
   # Make a new column called collected, with "Me" as the name. 
   dplyr::mutate(collector = "Me")
 
-# REFRESHER ON CONDITIONALS
+#########################################################################
+# 2. REFRESHER ON CONDITIONALS ------------------------------------------
+#########################################################################
+
 # These are really helpful functions to make your factors (i.e. your treatment 
 # variables) or your response variables more user-friendly. 
 
@@ -325,7 +190,7 @@ a <- data %>%
 
 data %>%
   dplyr::mutate(month = recode(month,     
-                              "Jan" = "January")) %>%
+                               "Jan" = "January")) %>%
   dplyr::distinct(month)
 
 ##################### End of session # 1 #####################

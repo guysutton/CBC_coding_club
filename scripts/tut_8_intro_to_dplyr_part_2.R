@@ -99,7 +99,23 @@ data %>% # and then...
 #########################################################################
 
 # These are really helpful functions to make your factors (i.e. your treatment 
-# variables) or your response variables more user-friendly. 
+# variables) or your response variables more user-friendly or cleaning up 
+# your coding of variables 
+# - (1) Say you have a plant_species column, and in that column, you have entered
+#   the same plant name in multiple ways (e.g. Lantana camara, L. camara and L. Camara)
+#   - R will treat these as 3 different plant species 
+#   - Conditionals allow us to quickly convert these into a consistent naming
+#     style (i.e. make all three == Lantana camara)
+
+# - (2) Say you have abundance data for a species (i.e. counts of individuals),
+#       but want to classify this into categories (e.g. SAPIA data takes counts of 
+#       invasive plants and classifies them into rare, absent, abundant, very abundant).
+#       - Conditionals allow us to take these counts and make them into a factor 
+#       - e.g. if count > 0 but less than 5 then classify as "rare"
+#              if count > 5 but less than 10, then classify as "abundant"
+#       - This would be extremely painfail to do row-by-row in excel for 60 000 rows 
+#         as contained in the SAPIA database currently. 
+
 
 # We have two options here, 
 # (1) ifelse - when we only have two outcomes (yes or no, 1/0, present/absent)
@@ -135,7 +151,7 @@ data %>%
 # (2) case_when - basically, ifelse for > 2 conditions 
 
 # - If x, then x, if not x, then y
-# - e.g. If we want to create a new column which classifies whether an insect species       was present or absent, based on counts of its abundance. 
+# - e.g. If we want to create a new column which classifies whether an insect species       was present, absent or abundant, based on counts of its abundance. 
 #   - So, if insect_sp1 = 0, we want the new column to say "absent", 
 #     and if insect_sp1 > 0 but less than 6, we want the new column to say "present",
 #     and if insect_sp1 > 6, we want the new column to say "abundant"

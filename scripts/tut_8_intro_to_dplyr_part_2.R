@@ -79,7 +79,7 @@ data %>%
 # Step 1: Take 'data' and then filter to keep only those rows where year 
 # is equal to 2019
 a <- data %>%
-  dplyr::filter(year == 2019)
+  dplyr::filter(year == 2019) 
 
 # Step 2: add a new column saying who collected the data.
 a <- a %>%
@@ -220,7 +220,7 @@ data %>%
 #       and != (not equal to)
 #     - Here, filter rows where insect_sp1 is greater than 8. 
 data %>%
-  dplyr::filter(insect_sp1 > 8)
+  dplyr::filter(insect_sp1 < 8)
 
 # (ii) Filter rows between two numeric values
 #      - Here filter rows where insect_sp1 is between 1 and 8. 
@@ -263,13 +263,14 @@ data %>%
 #       - We say filter within plant_species column, and only return rows
 #         where the character string 'Lantana' is present. 
 data %>%
-  dplyr::filter(str_detect(plant_species, "Lantana"))
+  dplyr::filter(stringr::str_detect(plant_species, "Lantana"))
 
 # (viii) Filter based on multiple conditions 
 
 # Example 1: Filter for 2017 data for Lantana urtica only 
 data %>%
   dplyr::filter(year == "2017" & plant_species == "Lantana urtica")
+
 
 # Example 2" Filter for 2017 data and where insect_sp1 abundance was not 0
 data %>%
@@ -297,7 +298,9 @@ data %>%
 data %>%
   group_by(year) %>%
   dplyr::summarise(mean_sp1 = mean(insect_sp1),
-                   sd_sp1   = sd(insect_sp1))
+                   sd_sp1   = sd(insect_sp1),
+                   mean_sp2 = mean(insect_sp2),
+                   sd_sp2   = sd(insect_sp2))
 
 # (iii) Summarise across multiple columns 
 #       - Here, we want to calculate mean insect_abundance 
@@ -317,11 +320,51 @@ data %>%
 
 # What if we wanted these stats across years and plant_species? 
 data %>%
-  group_by(year, plant_species) %>%
+  group_by(year, plant_species, month) %>%
   dplyr::summarise(across(insect_sp1:insect_sp2, list(mean = mean,
-                                                      sd = sd)))
+                                                    sd = sd)))
+
+# Add standard error 
+# std = standard deviation / sqrt(sample_size)
+data %>%
+  group_by(year, plant_species, month) %>%
+  dplyr::summarise(mean_sp1 = mean(insect_sp1),
+                   sd_sp1 = sd(insect_sp1),
+                   n = n()) %>%
+  dplyr::mutate(se_sp1 = sd_sp1/sqrt(n))
+
+
 
 a <- data %>%
   group_by(year, plant_species) %>%
   dplyr::summarise(across(insect_sp1:insect_sp2, list(mean = mean,
                                                       sd = sd)))
+a
+
+########################
+# Turn this into a plot
+########################
+
+# 1. Make data long
+a <- a %>%
+  tidyr::pivot_longer(
+    cols = c(insect_sp1_mean:insect_sp2_sd),
+    names_to = "x",
+    values_to = "value")
+
+# 2. Make columns for insect_sp and statistic (mean and sd)
+a <- a %>% separate(x, c("insect_sp", "sp", "stat"), "_")
+
+# 3. Now widen to get each insect and stat its own row 
+a <- a %>%
+  dplyr::select(-insect_sp) %>%
+  pivot_wider(names_from = "stat",
+              values_from = "value")
+a
+
+# 4. Now plot
+ggplot(data = a, aes(x = plant_species, y = mean, colour = sp)) +
+  geom_boxplot()
+
+
+

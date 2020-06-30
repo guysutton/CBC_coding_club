@@ -15,6 +15,7 @@
 # - 3. Make a boxplot
 # - 4. Make plots by groups 
 # - 5. Edit plots to look nice(r)
+# - 6. Save a high-quality figure to your PC
 ############################################################
 
 # Load required packages ---------------------------------------------
@@ -25,6 +26,7 @@ library(tidyverse)
 
 # Load dataset 
 insect_data <- readxl::read_excel("./data_raw/cochineal_fitness_data_double.xlsx") 
+
 # Check to make sure data imported properly
 head(insect_data)
 
@@ -137,7 +139,7 @@ ggplot(data = mean_fec, aes(x = plant_sp,
 
 # 6. Grouped boxplot -------------------------------------------------
 
-# Boxplot uses raw data, so no need to summaris beforehand. 
+# Boxplot uses raw data, so no need to summarise beforehand. 
 
 # Plot the graph we hoped for 
 # - x = ...argument for your main grouping
@@ -160,11 +162,13 @@ ggplot(data = insect_data, aes(x = plant_sp,
   # Change x and y-axis labels and legend title
   labs(x = "Plant species",
        y = "No. of crawlers",
-       fill = "Lineage") +
+       fill = "Lineage",
+       # Easy way to add panel labels
+       subtitle = "(a)") +
   # Change colour of boxes/bars/points manually
   # Number of colours = no. of levels in sub-grouping (fill)
   # Here, we want 3 colours for foll - single, multiple, outcrossed
-  scale_fill_manual(values = c("gray90", "gray70", "gray50")) +
+  scale_fill_manual(values = c("gray80", "gray60", "gray40")) +
   # Change x/y axis range and tick marks 
   # Breaks = seq =
   # First number = minimum y-value
@@ -187,9 +191,94 @@ ggplot(data = insect_data, aes(x = mass_start,
 # What if we wanted to look at whether relationship differed by plant species?
 ggplot(data = insect_data, aes(x = mass_start,
                                y = mass_final,
-                               #shape = plant_sp,
+                               #shape = lineage,
                                colour = lineage)) +
   geom_jitter() + # Change to jitter - overlapping points
   geom_smooth(method = "lm", se = F) + 
+  # Change colour of boxes/bars/points manually
+  # Number of colours = no. of levels in sub-grouping (fill)
+  # Here, we want 3 colours for foll - single, multiple, outcrossed
+  scale_colour_manual(values = c("gray80", "gray60", "gray40")) +
+  # Change x and y-axis labels and legend title
+  labs(x = "Initial female mass (g)",
+       y = "Final female mass (g)",
+       colour = "Lineage",
+       # Easy way to add panel labs
+       subtitle = "(b)") +
   facet_wrap(~ plant_sp, ncol = 1) +
   theme(legend.position = "right") 
+
+
+# 10. Save a high-quality graph --------------------------------------
+
+ggsave("./figures/fig_1_boxplot_crawlers_by_lineage_plant_species.png",
+       # Quality/resolution of fig - 600 = publication quality
+       dpi = 600,
+       # Control figure height and width
+       # Usually have to play around with this 
+       height = 4, 
+       width = 5)
+
+
+# 11. Putting multiple graphs into one plot --------------------------
+
+# We have to store the graphs we want into variables/objects. 
+
+# Store first graph
+graph_1 <- ggplot(data = insect_data, aes(x = plant_sp, 
+                               y = crawlers_final, 
+                               fill = lineage)) +
+  geom_boxplot() +
+  theme(legend.position = "right") +
+  # Change x and y-axis labels and legend title
+  labs(x = "Plant species",
+       y = "No. of crawlers",
+       fill = "Lineage",
+       # Easy way to add panel labs
+       subtitle = "(a)") +
+  # Change colour of boxes/bars/points manually
+  # Number of colours = no. of levels in sub-grouping (fill)
+  # Here, we want 3 colours for foll - single, multiple, outcrossed
+  scale_fill_manual(values = c("gray80", "gray60", "gray40")) +
+  # Change x/y axis range and tick marks 
+  # Breaks = seq =
+  # First number = minimum y-value
+  # Second number = maximum y-value
+  # Distance between ticks on y-axis
+  scale_y_continuous(breaks = seq(0, 125, 25),
+                     limits = c(0, 125)) +
+  # Change x-axis labels to italics (for species names)
+  theme(axis.text.x = element_text(face = "italic"))
+graph_1
+
+# Store second graph
+graph_2 <- ggplot(data = insect_data, aes(x = mass_start,
+                                          y = mass_final,
+                                          #shape = lineage,
+                                          colour = lineage)) +
+  geom_jitter() + # Change to jitter - overlapping points
+  geom_smooth(method = "lm", se = F) + 
+  # Change colour of boxes/bars/points manually
+  # Number of colours = no. of levels in sub-grouping (fill)
+  # Here, we want 3 colours for foll - single, multiple, outcrossed
+  scale_colour_manual(values = c("gray80", "gray60", "gray40")) +
+  # Change x and y-axis labels and legend title
+  labs(x = "Initial female mass (g)",
+       y = "Final female mass (g)",
+       colour = "Lineage",
+       # Easy way to add panel labs
+       subtitle = "(b)") +
+  facet_wrap(~ plant_sp, ncol = 1) +
+  theme(legend.position = "right") 
+graph_2
+
+# Put the two graphs together 
+library(cowplot)
+plot_grid(graph_1, graph_2)
+ggsave("./figures/fig_2_multiple_plots.png",
+       # Quality/resolution of fig - 600 = publication quality
+       dpi = 600,
+       # Control figure height and width
+       # Usually have to play around with this 
+       height = 8, 
+       width = 14)

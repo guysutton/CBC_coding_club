@@ -62,14 +62,12 @@ ggplot(<DATA>, aes(<MAPPING>)) +
 # mapping = your x and y variables, and any relevant groups (e.g. treatments)
 # geom = shape of your graph (e.g. boxplot, lineplot)
   
-
 # 1. Histogram (frequency distribution) ------------------------------
 
 # Plot one continous variable 
 # - e.g. Visualise distribution of number of crawlers made by females
 ggplot(data = insect_data, aes(x = crawlers_final)) +
   geom_histogram()
-
 
 # 2. Scatterplot -----------------------------------------------------
 
@@ -78,7 +76,6 @@ ggplot(data = insect_data, aes(x = crawlers_final)) +
 ggplot(data = insect_data, aes(x = mass_start,
                                y = mass_final)) +
   geom_point()
-
 
 # 3. Barplot ---------------------------------------------------------
 
@@ -98,14 +95,13 @@ ggplot(data = mean_fec, aes(x = plant_sp,
                             y = mean_crawlers)) +
   geom_col()
 
-
 # 4. Boxplot ------------------------------------------------------------
 
 # Plot one categorical variable and one continous variable
 # - e.g. Does the plant reared upon influence insect fecundity? 
 ggplot(data = insect_data, aes(x = plant_sp,
                                y = crawlers_total)) +
-  geom_boxplot() 
+  geom_boxplot()
 
 # Adding raw data onto boxplot
 ggplot(data = insect_data, aes(x = plant_sp,
@@ -121,7 +117,11 @@ mean_fec <- insect_data %>%
   dplyr::summarise(mean_crawlers = mean(crawlers_final),
                    sd_crawlers = sd(crawlers_final)) %>%
   dplyr::mutate(lower_sd = mean_crawlers - sd_crawlers,
-                upper_sd = mean_crawlers + sd_crawlers)
+                upper_sd = mean_crawlers + sd_crawlers) %>%
+  dplyr::mutate(lower_sd = case_when(
+    lower_sd < 0 ~ 0,
+    lower_sd > 0 ~ lower_sd
+  ))
 
 # Then, we can plot the graph we hoped for 
 # - x = ...argument for your main grouping
@@ -129,13 +129,11 @@ mean_fec <- insect_data %>%
 ggplot(data = mean_fec, aes(x = plant_sp, 
                             y = mean_crawlers,
                             fill = lineage)) +
-  geom_col(position = "dodge") + 
+  geom_col(position = "dodge") +
   geom_errorbar(aes(ymin = lower_sd,
-                    ymax = upper_sd,
-                    group = lineage),
+                    ymax = upper_sd),
                 position = "dodge") +
   theme(legend.position = "right")
-
 
 # 6. Grouped boxplot -------------------------------------------------
 
@@ -145,7 +143,7 @@ ggplot(data = mean_fec, aes(x = plant_sp,
 # - x = ...argument for your main grouping
 # - fill = ... argument for your sub-grouping 
 ggplot(data = insect_data, aes(x = plant_sp, 
-                               y = crawlers_final, 
+                               y = crawlers_final,
                                fill = lineage)) +
   geom_boxplot() +
   theme(legend.position = "right")
@@ -168,7 +166,7 @@ ggplot(data = insect_data, aes(x = plant_sp,
   # Change colour of boxes/bars/points manually
   # Number of colours = no. of levels in sub-grouping (fill)
   # Here, we want 3 colours for foll - single, multiple, outcrossed
-  scale_fill_manual(values = c("gray80", "gray60", "gray40")) +
+  scale_fill_manual(values = c("white", "grey80", "grey60")) +
   # Change x/y axis range and tick marks 
   # Breaks = seq =
   # First number = minimum y-value
@@ -178,7 +176,6 @@ ggplot(data = insect_data, aes(x = plant_sp,
                      limits = c(0, 125)) +
   # Change x-axis labels to italics (for species names)
   theme(axis.text.x = element_text(face = "italic"))
-
 
 # 8. Grouped scatterplot/linegraph -----------------------------------
 
@@ -205,6 +202,8 @@ ggplot(data = insect_data, aes(x = mass_start,
        colour = "Lineage",
        # Easy way to add panel labs
        subtitle = "(b)") +
+  # Plot different panels for different levels within plant_sp
+  # i.e. plot a different panel for stricta and ficus-indica
   facet_wrap(~ plant_sp, ncol = 1) +
   theme(legend.position = "right") 
 
@@ -218,7 +217,6 @@ ggsave("./figures/fig_1_boxplot_crawlers_by_lineage_plant_species.png",
        # Usually have to play around with this 
        height = 4, 
        width = 5)
-
 
 # 11. Putting multiple graphs into one plot --------------------------
 
@@ -269,7 +267,10 @@ graph_2 <- ggplot(data = insect_data, aes(x = mass_start,
        # Easy way to add panel labs
        subtitle = "(b)") +
   facet_wrap(~ plant_sp, ncol = 1) +
-  theme(legend.position = "right") 
+  theme(legend.position = "right") +
+  geom_text(text = c("a"),
+            x = 1, 
+            y = 25)
 graph_2
 
 # Put the two graphs together 

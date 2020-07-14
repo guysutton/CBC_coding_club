@@ -84,8 +84,9 @@ The data we will use comes from Allison Horst's `palmerpenguins` package which w
 &nbsp;  
 
 ```{r, echo = TRUE, include = FALSE}
-# Install 'palmerpenguins' package 
+# Install and load 'palmerpenguins' package 
 remotes::install_github("allisonhorst/palmerpenguins")
+library(palmerpenguins)
 ```
 
 ```{r, echo = TRUE, include = FALSE}
@@ -176,7 +177,7 @@ perform a PCA. Beforehand, we need to pre-process the data:
 
 * (3) scale all predictors
 
-+ Steps 2 and 3 make the data have equal variance (variance = 1), which removes the issue with scales of different variables having an influence on our final results. For example, if penguin body mass ranges from 10g to 30g, and flipper_length_mm ranges from 100mm to 500mm, PCA will undoubtedly say flipper length is NB, purely because the units are larger. 
++ Steps 2 and 3 make the data have equal variance (variance = 1), which removes the issue with scales of different variables having an influence on our final results. For example, if penguin body mass ranges from 10kg to 30kg, and flipper_length_mm ranges from 100mm to 500mm, PCA will undoubtedly say flipper length is NB, purely because the units are larger. 
 
 &nbsp;  
 
@@ -243,8 +244,7 @@ tidied_pca %>%
   theme(legend.position = "right")
 ```
 
-We must look at these loadings to decide on which variables differentiate 
-each PC axis. For example, PC1 is differentiated by flipper_length vs bill_depth - i.e. species with longer flippers, have smaller bill widths. 
+We must look at these loadings to decide on which variables differentiate each PC axis. For example, PC1 is differentiated by flipper_length vs bill_depth - i.e. species with longer flippers, have smaller bill widths. 
 
 \pagebreak
 
@@ -309,7 +309,7 @@ pca_plot <-
   # Extract the PC axes scores
   juice(pca_prep) %>%
   # Make a plot
-  ggplot(aes(PC1, PC2)) +
+  ggplot(aes(x = PC1, y = PC2)) +
   # Add sample points to PCA
   geom_point(aes(color = species), 
              alpha = 0.8, 
@@ -355,6 +355,7 @@ pca_biplot <- pca_plot +
   geom_text(data = pca_wider,
             aes(x = PC1, 
                 y = PC2, 
+                # Specify names 
                 label = terms), 
             hjust = 0, 
             vjust = 1,
@@ -371,7 +372,8 @@ Interpretation:
 
 (1) The first axis represents an axis of penguin body mass. 
 
-+ This axis separates our species into larger (Gentoo) and smaller penguin species (Chinstap and Adelie), based on their respective body masses and flipper lengths.  
++ This axis separates our species into larger (Gentoo) and smaller penguin species (Chinstap and Adelie), based on their respective body masses and flipper lengths. 
+
 (2) The second PC axis represents an axis of bill characteristis.  
 
 + This axis separates our two remaining penguin species (albeit not very well) into species with larger (Adelie) and smaller (Chinstrap) bills. 
@@ -466,9 +468,27 @@ pca_hulls <-
   theme(legend.position = "right") +
   # Change the title of the legend 
   labs(colour = "Penguin species",
-       x = "PC1 (68.% variation explained)",
+       x = "PC1 (68.x% variation explained)",
        y = "PC1 (19.5.% variation explained)")
 pca_hulls
+
+# Now we plot the biplot over the PCA plot
+pca_biplot <- pca_hulls +
+  # Add arrows
+  geom_segment(data = pca_wider,
+               aes(xend = PC1, yend = PC2), 
+               x = 0, 
+               y = 0, 
+               arrow = arrow_style) + 
+  # Add variable names
+  geom_text(data = pca_wider,
+            aes(x = PC1, 
+                y = PC2, 
+                label = terms), 
+            hjust = 0, 
+            vjust = 1,
+            size = 5)
+pca_biplot
 ```
 
 ```{r, include = FALSE, echo = FALSE}

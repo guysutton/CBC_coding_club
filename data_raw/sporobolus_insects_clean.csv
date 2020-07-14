@@ -1,0 +1,115 @@
+﻿site_code;sampling_date;season;disturb_allow_overwinter;sp_tet1;sp_tet2;sp_bru1;sp_sht1;sp_chl1;sp_eur4
+LTS001;Jan-18;Summer;Undisturbed;14; 0; 2;2;0;0
+LTS001;Jul-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS001;Mar-18;Summer;Undisturbed; 0; 6; 0;4;0;0
+LTS001;May-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS001;Nov-17;Summer;Undisturbed;14; 2; 3;2;0;0
+LTS001;Sep-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS003;Jan-18;Summer;Undisturbed; 4; 5; 4;4;0;0
+LTS003;Jul-18;Winter;Undisturbed; 9; 6; 2;1;2;0
+LTS003;Mar-18;Summer;Undisturbed; 4; 4; 6;4;1;1
+LTS003;May-18;Winter;Undisturbed; 3; 4;10;3;3;4
+LTS003;Nov-17;Summer;Undisturbed; 0; 1;10;0;0;0
+LTS003;Sep-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS004;Jan-18;Summer;Undisturbed; 0; 0; 1;0;0;0
+LTS004;Jul-18;Winter;Undisturbed; 2; 1; 2;0;0;0
+LTS004;Mar-18;Summer;Undisturbed; 1; 4; 1;0;0;0
+LTS004;May-18;Winter;Undisturbed; 1; 1; 2;0;0;0
+LTS004;Nov-17;Summer;Undisturbed; 1; 2; 1;0;0;0
+LTS004;Sep-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS005;Jan-18;Summer;Disturbed; 0; 0; 0;0;0;0
+LTS005;Jul-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS005;Mar-18;Summer;Disturbed; 0; 0; 0;0;0;0
+LTS005;May-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS005;Nov-17;Summer;Disturbed; 0; 0; 0;0;0;0
+LTS005;Sep-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS006;Jan-18;Summer;Disturbed; 0; 0; 0;0;0;0
+LTS006;Jul-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS006;Mar-18;Summer;Disturbed; 0; 0; 0;0;0;0
+LTS006;May-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS006;Nov-17;Summer;Undisturbed; 1; 0; 0;4;1;0
+LTS006;Sep-18;Winter;Disturbed; 1; 0; 0;0;0;0
+LTS007;Jan-18;Summer;Disturbed; 0; 0; 0;0;1;0
+LTS007;Jul-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS007;Mar-18;Summer;Disturbed; 0; 0; 0;4;0;0
+LTS007;May-18;Winter;Disturbed; 0; 0; 0;0;1;0
+LTS007;Nov-17;Summer;Disturbed; 3; 0; 0;0;0;0
+LTS007;Sep-18;Winter;Disturbed; 1; 0; 0;5;1;0
+LTS008;Jan-18;Summer;Undisturbed; 0; 0; 4;0;0;0
+LTS008;Jul-18;Winter;Undisturbed; 4; 0; 0;0;0;0
+LTS008;Mar-18;Summer;Undisturbed; 5; 0; 6;0;0;0
+LTS008;May-18;Winter;Undisturbed;12; 7; 0;0;0;0
+LTS008;Nov-17;Summer;Undisturbed;12; 6; 7;0;0;0
+LTS008;Sep-18;Winter;Undisturbed; 3; 0; 5;0;1;0
+LTS009;Jan-18;Summer;Undisturbed; 6; 3; 0;0;0;0
+LTS009;Jul-18;Winter;Disturbed; 0; 0; 0;1;2;0
+LTS009;Mar-18;Summer;Undisturbed; 0;12; 0;3;1;2
+LTS009;May-18;Winter;Disturbed; 0; 0; 0;0;2;1
+LTS009;Nov-17;Summer;Undisturbed; 5; 0; 0;3;7;0
+LTS009;Sep-18;Winter;Disturbed; 0; 0; 0;0;2;0
+LTS010;Jan-18;Summer;Undisturbed;12;10; 1;2;0;1
+LTS010;Jul-18;Winter;Undisturbed; 2; 6; 2;2;7;2
+LTS010;Mar-18;Summer;Undisturbed; 6; 5; 4;2;5;0
+LTS010;May-18;Winter;Undisturbed;10; 9; 4;3;9;4
+LTS010;Nov-17;Summer;Undisturbed; 7; 1; 5;1;0;0
+LTS010;Sep-18;Winter;Undisturbed; 3; 1; 3;1;1;6
+LTS011;Jan-18;Summer;Undisturbed; 0; 4;10;1;0;0
+LTS011;Jul-18;Winter;Undisturbed; 2; 3; 5;0;5;0
+LTS011;Mar-18;Summer;Undisturbed; 1; 3; 1;2;0;0
+LTS011;May-18;Winter;Undisturbed; 4;13; 1;0;0;0
+LTS011;Nov-17;Summer;Undisturbed; 8; 3; 0;0;0;0
+LTS011;Sep-18;Winter;Undisturbed; 0; 0; 0;0;0;2
+LTS012;Jan-18;Summer;Undisturbed; 0;11; 0;0;0;0
+LTS012;Jul-18;Winter;Undisturbed; 7;12; 0;0;0;0
+LTS012;Mar-18;Summer;Undisturbed; 8; 4; 0;0;0;2
+LTS012;May-18;Winter;Undisturbed; 5; 4; 0;0;0;0
+LTS012;Nov-17;Summer;Undisturbed; 6; 7; 0;0;0;1
+LTS012;Sep-18;Winter;Undisturbed; 1; 0; 0;0;0;0
+LTS013;Jan-18;Summer;Undisturbed; 3; 5; 1;0;0;0
+LTS013;Jul-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS013;Mar-18;Summer;Undisturbed; 2; 0; 4;0;0;0
+LTS013;May-18;Winter;Undisturbed; 2; 3; 6;0;0;0
+LTS013;Nov-17;Summer;Undisturbed; 1; 0; 3;0;0;0
+LTS013;Sep-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS015;Jan-18;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS015;Jul-18;Winter;Undisturbed; 0; 0; 0;0;0;0
+LTS015;Mar-18;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS015;May-18;Winter;Undisturbed; 0; 0; 0;0;0;0
+LTS015;Nov-17;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS015;Sep-18;Winter;Undisturbed; 0; 0; 0;0;0;0
+LTS016;Jan-18;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS016;Jul-18;Winter;Undisturbed; 0; 0; 0;0;0;0
+LTS016;Mar-18;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS016;May-18;Winter;Undisturbed; 0; 0; 0;0;0;0
+LTS016;Nov-17;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS016;Sep-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS017;Jan-18;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS017;Jul-18;Winter;Disturbed; 0; 0; 0;1;0;0
+LTS017;Mar-18;Summer;Disturbed; 0; 0; 0;0;0;0
+LTS017;May-18;Winter;Disturbed; 0; 0; 0;0;1;1
+LTS017;Nov-17;Summer;Undisturbed; 0; 0; 0;3;0;4
+LTS017;Sep-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS018;Jan-18;Summer;Undisturbed; 1; 5; 0;0;0;0
+LTS018;Jul-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS018;Mar-18;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS018;May-18;Winter;Disturbed; 0; 0; 0;0;2;0
+LTS018;Nov-17;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS018;Sep-18;Winter;Undisturbed; 2; 0; 0;2;1;0
+LTS019;Jan-18;Summer;Undisturbed; 3; 0; 0;0;1;0
+LTS019;Jul-18;Winter;Disturbed; 7; 0; 0;0;0;0
+LTS019;Mar-18;Summer;Disturbed; 2; 0; 0;0;0;0
+LTS019;May-18;Winter;Disturbed; 2; 0; 0;0;6;0
+LTS019;Nov-17;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS019;Sep-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS020;Jan-18;Summer;Disturbed; 0; 0; 0;0;0;0
+LTS020;Jul-18;Winter;Undisturbed; 0; 0; 0;0;0;0
+LTS020;Mar-18;Summer;Disturbed; 0; 0; 0;0;0;0
+LTS020;May-18;Winter;Disturbed; 0; 0; 0;0;0;0
+LTS020;Nov-17;Summer;Disturbed; 0; 0; 0;0;0;0
+LTS020;Sep-18;Winter;Undisturbed; 0; 0; 0;0;0;0
+LTS021;Jan-18;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS021;Jul-18;Winter;Undisturbed; 0; 0; 0;0;0;0
+LTS021;Mar-18;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS021;May-18;Winter;Undisturbed; 0; 0; 0;0;0;0
+LTS021;Nov-17;Summer;Undisturbed; 0; 0; 0;0;0;0
+LTS021;Sep-18;Winter;Undisturbed; 0; 0; 0;0;0;0

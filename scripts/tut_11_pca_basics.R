@@ -367,6 +367,84 @@ pca_plot +
 # between Chinstrap and Adelie penguins. 
 
 ######################################################################
+# Adding convex hulls ------------------------------------------------
+######################################################################
+
+# First, extract PC co-ords 
+pc_points <- juice(pca_prep)
+
+# Second, calculate convex polygons for each species
+hulls <- pc_points %>%
+  group_by(species) %>%
+  slice(chull(PC1, PC2))
+
+# Lastly, make the new plot 
+pca_hulls <-
+  # Extract the PC axes scores
+  juice(pca_prep) %>%
+  # Make a plot
+  ggplot(aes(PC1, PC2)) +
+  # Add convex hulls
+  # Hulls must come before points!!! 
+  geom_polygon(data = hulls, 
+               aes(fill = species),
+               alpha = 0.4) + 
+  # Add sample points to PCA
+  geom_point(aes(color = species), 
+             alpha = 0.8, 
+             size = 2) +
+  # Specify three colours for the three different penguin species
+  # Colour for points
+  # Fill for convex hulls (polygon)
+  scale_colour_manual(values = c("seagreen3", "#0A537D", "deepskyblue1")) +
+  scale_fill_manual(values = c("seagreen3", "#0A537D", "deepskyblue1")) +
+  # Remove the second legend (unnecessary)
+  guides(fill = "none") +
+  # Add a legend for the colours
+  theme(legend.position = "right") +
+  # Change the title of the legend 
+  labs(colour = "Penguin species",
+       x = "PC1 (68.8% variation explained)",
+       y = "PC1 (19.5% variation explained)")
+pca_hulls
+
+# Now we plot the biplot over the PCA plot
+pca_biplot <- pca_hulls +
+  # Add arrows
+  geom_segment(data = pca_wider,
+               aes(xend = PC1, yend = PC2), 
+               x = 0, 
+               y = 0, 
+               arrow = arrow_style) + 
+  # Add variable names
+  geom_text(data = pca_wider,
+            aes(x = PC1, 
+                y = PC2, 
+                label = terms), 
+            hjust = 0, 
+            vjust = 1,
+            size = 5)
+pca_biplot
+
+# Save this last graph to our PC
+ggsave(here::here("./figures/fig_5_pca_penguins_hulls.png"),
+       dpi = 600,
+       height = 5,
+       width = 8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+######################################################################
 # What do we do now?  ------------------------------------------------
 ######################################################################
 

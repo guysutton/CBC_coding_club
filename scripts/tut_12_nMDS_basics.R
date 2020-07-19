@@ -10,13 +10,9 @@
 
 ###########################################################
 # Aims:
-# - 1. Understand what a PCA is used for  
-# - 2. Run a simple PCA analysis
-# - 3. Interpret PCA output
-# - 4. Understand how PCA can be used in further analyses
-#      NB: You are not expected to understand the additional modelling
-#          exercise per se: it is just there to illustrate
-#          how you would use the data obtained from PCA 
+# - 1. Understand what nMDS does
+# - 2. Run a simple nMDS
+# - 3. Interpret nMDS output
 ############################################################
 
 ######################################################################
@@ -98,6 +94,14 @@ com_data_sp
 # abundance data and convert it to a relative abundance. 
 # - Relative abundance is the percent composition of an organism relative 
 # to the maximum number of individuals in the community. 
+
+# Because of issues where rows sum to 0, we must first use 
+# zero-adjusted Bray-Curtis dissimilarity matrix - add dummy species 
+# where abundance = 1
+com_data_sp$sp_dum1 <- 1
+com_data_sp
+
+# Now calculate relative abundances
 com_data_std  <-         
   vegan::decostand(com_data_sp, 
                    method = "total")
@@ -106,17 +110,13 @@ com_data_std
 
 # Step 2: Calculate dissimilarity metric -----------------------------
 
-# Because of issues where rows sum to 0, we must use 
-# zero-adjusted Bray-Curtis dissimilarity matrix - add dummy species where abundance = 1
-com_data_std$sp_dum1 <- 1
-com_data_std
-
 # Now calculate Bray Curtis metric 
 com_data_distmat <- 
   vegan::vegdist(com_data_std, method = "bray")
 
 # Make this into a matrix
 com_matrix <- as.matrix(com_data_distmat)
+com_matrix
 
 
 # Step 3: Run nMDS ---------------------------------------------------
@@ -142,6 +142,8 @@ comm.mds <- metaMDS(comm = com_matrix, # matrix of species abundance data
 # Step 4: Evaluate fit of nMDS ---------------------------------------
 
 # Firstly, we can plot a Sheppard/stressplot. 
+# This looks at how closely the distances between sampling units 
+# are preserved in the ordination versus the dissimilarity value itself.
 # Here, we are looking for little scatter around the line. 
 # - Large scatter is bad. 
 # - We really want Goodness of fit (R2) > 0.9 = excellent
@@ -170,7 +172,6 @@ comm.mds$stress
 
 # Here, our stress value = 0.12, so our nMDS is usable (okay). 
 
-
 # Step 5: Plot nMDS --------------------------------------------------
 
 # Plot preliminary nMDS using base functionality 
@@ -193,12 +194,13 @@ xy.mds <- xy.mds %>%
 
 # Plot the nMDS with colour-coded points for disturbance regimes, 
 # and shapes for season
-ggplot(data = xy.mds, aes(x = MDS1, 
-                          y = MDS2,
-                          shape = as.factor(season),
-                          colour = as.factor(disturb))) + 
+ggplot() + 
   # Use geom_jitter to add each survey as a point
-  geom_jitter(width = 0.2, height = 0.2, size = 2) +
+  geom_jitter(data = xy.mds, aes(x = MDS1, 
+                                 y = MDS2,
+                                 shape = season,
+                                 colour = as.factor(disturb)),
+              width = 0.05, height = 0.05, size = 2) +
   # Manually specify colours 
   scale_colour_manual(values=c("black", "gray60")) + 
   # Labels for axes and legend 
@@ -217,11 +219,4 @@ ggplot(data = xy.mds, aes(x = MDS1,
 ggsave("./figures/fig_5_nMDS_plot.png", 
        width = 6, 
        height = 4)
-
-
-
-
-
-
-
 

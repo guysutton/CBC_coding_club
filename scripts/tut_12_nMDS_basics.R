@@ -59,12 +59,8 @@ head(data_clean)
 #   differ between seasons and disturbance regimes... 
 
 ######################################################################
-# nMDS to visualise data ---------------------------------------------
+# What is nMDS?--------- ---------------------------------------------
 ######################################################################
-
-# The first step towards answering this question is to visualise 
-# whether community composition differs between surveys performed 
-# during seasons and/or disturbance regimes. 
 
 # What is nMDS?
 # - nMDS is a statistical tool for multivariate data which allows us 
@@ -76,6 +72,23 @@ head(data_clean)
 # - Typically, ecologists use Bray-Curtis similarity index.
 #   - The index takes values ranging from 0 (two surveys share the same      #     species) to 1 (two surveys do not share any common species). 
 
+# More importantly, what does nMDS not do?
+# - nMDS is not a statistical analysis.
+#   - We cannot perform hypothesis testing using nMDS (there are methods),
+#     for multivariate hypothesis testing (we will cover this next week).
+
+# Take home: nMDS is a great tool for VISUALISING multivariate relatioships.
+# - e.g. How different are biological communities between sites, years, ect... 
+
+# For my study (i.e. the subset of data we are dealing with today),
+# - The first step towards answering this question is to visualise 
+#   whether community composition differs between surveys performed 
+#   during seasons and/or disturbance regimes. 
+
+
+######################################################################
+# Running an nMDS --------- ------------------------------------------
+######################################################################
 
 # Step 1: Prepare data -----------------------------------------------
 
@@ -92,8 +105,11 @@ com_data_sp
 # Multivariate analyses are sensitive to absolute abundances in a sample,
 # which can skew results. To overcome this issue, we can take absolute
 # abundance data and convert it to a relative abundance. 
+# - There is conflicting opinions on whether this is required when
+#   using Bray-Curtis metric (probably not required), but I show it 
+#   today for interest sakes. 
 # - Relative abundance is the percent composition of an organism relative 
-# to the maximum number of individuals in the community. 
+#   to the maximum number of individuals in the community. 
 
 # Because of issues where rows sum to 0, we must first use 
 # zero-adjusted Bray-Curtis dissimilarity matrix - add dummy species 

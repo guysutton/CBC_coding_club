@@ -25,6 +25,17 @@ pacman::p_load(tidyverse,
                MASS,
                vegan) # 'vegan' is the workhorse of multivariate analyses
 
+# Change ggplot theme
+theme_set(theme_classic() +
+            theme(panel.border = element_rect(colour = "black", 
+                                              fill = NA),
+                  axis.text = element_text(colour = "black"),
+                  axis.title.x = element_text(margin = unit(c(2, 0, 0, 0), 
+                                                            "mm")),
+                  axis.title.y = element_text(margin = unit(c(0, 4, 0, 0), 
+                                                            "mm")),
+                  legend.position = "none"))
+
 ######################################################################
 # Load raw data ------------------------------------------------------
 ######################################################################
@@ -70,7 +81,8 @@ head(data_clean)
 #   in abundance between surveys, but the entire collection of species.
 # - Input data requires a similarity matrix (not just species abundances)
 # - Typically, ecologists use Bray-Curtis similarity index.
-#   - The index takes values ranging from 0 (two surveys share the same      #     species) to 1 (two surveys do not share any common species). 
+#   - The index takes values ranging from 0 (two surveys share the same      
+#     species) to 1 (two surveys do not share any common species). 
 
 # More importantly, what does nMDS not do?
 # - nMDS is not a statistical analysis.
@@ -128,22 +140,27 @@ com_data_std
 
 # Now calculate Bray Curtis metric 
 com_data_distmat <- 
-  vegan::vegdist(com_data_std, method = "bray")
+  vegan::vegdist(com_data_std, 
+                 method = "bray")
+class(com_data_distmat)
 
 # Make this into a matrix
 com_matrix <- as.matrix(com_data_distmat)
 com_matrix
 
+# Check this is now actually a matrix
+class(com_matrix)
+
 
 # Step 3: Run nMDS ---------------------------------------------------
 
 # Perform a preliminary nMDS
-comm.mds <- metaMDS(comm = com_matrix, # matrix of species abundance data
-                    distance = "bray", # dissimilarity metric
-                    trace = FALSE, # Suppress R information 
-                    autotransform = FALSE,
-                    k = 2, 
-                    trymax = 100) 
+comm.mds <- vegan::metaMDS(comm = com_matrix, # matrix of species abundance data
+                           distance = "bray", # dissimilarity metric
+                           trace = FALSE, # Suppress R information 
+                           autotransform = FALSE, 
+                           k = 2, 
+                           trymax = 100) 
 
 # R will not allow any analyses where row sums for the 
 # species x matrix are < 1, if this is the case, it throws:
@@ -194,7 +211,6 @@ comm.mds$stress
 plot(comm.mds)
 
 ### This is not very informative. Let's add some sample details to the plot. 
-
 # # Extract the XY co-ordinates from the nMDS plot
 xy.mds <- data.frame(comm.mds$points)
 
@@ -216,20 +232,19 @@ ggplot() +
                                  y = MDS2,
                                  shape = season,
                                  colour = as.factor(disturb)),
-              width = 0.05, height = 0.05, size = 2) +
+              width = 0.05, 
+              height = 0.05, 
+              size = 2) +
   # Manually specify colours 
   scale_colour_manual(values=c("black", "gray60")) + 
+  scale_x_continuous(breaks = c(-0.6, 0.6),
+                     se = c(-0.6, 0.6, 0.2)) +
   # Labels for axes and legend 
   labs(x = "nMDS axis 1",
        y = "nMDS axis 2",
        colour = "Disturbance",
        shape = "Season") +
-  theme_classic() + 
-  theme(panel.border = element_rect(colour = "black", fill = NA),
-        axis.text = element_text(colour = "black"),
-        axis.title.x = element_text(margin = unit(c(2, 0, 0, 0), "mm")),
-        axis.title.y = element_text(margin = unit(c(0, 4, 0, 0), "mm")),
-        legend.position = "right")
+  theme(legend.position = "right")
 
 # Save this nMDS to file 
 ggsave("./figures/fig_5_nMDS_plot.png", 

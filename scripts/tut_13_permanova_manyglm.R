@@ -189,6 +189,8 @@ plot(mod1)
 # Here, we see a slight fan-shape in the model residuals. 
 # - I mean that the vertical range at the lowest x-value is 
 #   much smaller than the spread at the highest x-value. 
+# - This implies that there is more variation at higher x-values than
+#   expected under the poisson distribution. 
 # - We need to model the variance differently.
 
 # Before we do that, let's plot mean-variance relationship directly

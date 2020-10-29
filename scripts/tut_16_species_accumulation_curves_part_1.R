@@ -6,23 +6,28 @@
 ###########################################################################
 ###########################################################################
 
-# Today we are going to look at how to compute and plot species 
+# Today, we are going to look at how to compute and plot species 
 # accumulation curves in R, using the amazing 'vegan' package. 
 # - This analysis is particularly relevant in our research group
 #   because we are often looking for potential biocontrol agents
 #   in the native range, and SAC's allow us to evaluate when to stop 
 #   surveys, or where to continue or surveys. 
-# - For example, we could do 20 surveys during each of summer and winter
-#   this year, and want to ask whether we should be surveying in both seasons
-#   again next winter.
-#   - SAC's allow us to answer this question. 
+# - For example, (1) We could ask whether the 40 surveys we performed
+#                    over the past year were sufficient to record all species
+#                    on a host plant? If so, we could then stop our surveys. 
+# - Or,          (2) we could do 20 surveys during each of summer and winter
+#                    this year, and want to ask whether we should be surveying 
+#                    in both seasons again next winter.
+#                       - SAC's allow us to answer these questions. 
 
 # In this session, we are going to cover the most basic SAC - observed richness.
 # - Observed species richness (hereafter 'S') simply tells us:
 #   (1) how many species we have recorded, to date, and 
 #   (2) whether more surveys could yield new additional species. 
 # - It DOES NOT tell us how many species could be in the community 
-#   (i.e. we CANNOT extrapolate species richness estimates from S). 
+#   (i.e. we CANNOT extrapolate species richness estimates from S).
+#   - Next week, we will cover how to extrapolate species richness 
+#     (part 2). 
 
 ###########################################################################
 # Load packages -----------------------------------------------------------
@@ -64,11 +69,6 @@ head(data_clean)
 # What is the coding practice that is being broken here? 
 # - Hint: look at the column names and types (<dbl>)
 # - Fly-swotter time!!!
-
-
-
-
-
 data_clean <- data_clean %>%
   dplyr::mutate(season = if_else(season == 1, "Summer", "Winter"))
 head(data_clean)
@@ -94,13 +94,16 @@ data_sac <- as.data.frame(data_sac)
 
 # Run SAC
 # - We feed in a data frame or matrix of a species abundance matrix
-#   - We must remove all the columns with site/province/ect data... 
-sac1 <- poolaccum(data_sac)
-head(sac1)
+#   - We must remove all the columns with site/province/ect data...
+class(data_sac)
+sac1 <- vegan::poolaccum(data_sac)
 plot(sac1)
 
-# Extract observed richness estimate 
-obs <- data.frame(summary(sac1)$S,check.names = FALSE)
+# This is literally it. 
+# - Below, we will extract the data so that we can plot it nicely. 
+
+# Extract observed richness (S) estimate 
+obs <- data.frame(summary(sac1)$S, check.names = FALSE)
 colnames(obs) <- c("N", "S", "lower2.5", "higher97.5", "std")
 head(obs)
 
@@ -111,6 +114,7 @@ head(obs)
 obs %>%
   ggplot(data = ., aes(x = N,
                        y = S)) +
+  # Add confidence intervals
   geom_ribbon(aes(ymin = lower2.5,
                   ymax = higher97.5),
               alpha = 0.3) +
@@ -133,7 +137,6 @@ obs %>%
 
 # Here, let's ask whether we should be surveying in both 
 # seasons (summer and winter). 
-
 sac_by_group <- data_clean %>%
   # Which groups do you want different SAC's for? 
   dplyr::group_by(season) %>%
@@ -197,6 +200,7 @@ sac_by_group %>%
        y = "Species richness",
        fill = "Season") +
   guides(colour = FALSE) + 
+  # Different panels for summer and winter
   facet_wrap(~ group, ncol = 2) + 
   theme(legend.position = "right")
 
@@ -206,39 +210,37 @@ ggsave("./figures/sac_by_group_facet.png",
        height = 6, 
        width = 8)
 
+###########################################################################
+# Section #3: Using custom built functions --------------------------------
+###########################################################################
 
+# Load my custom functions 
+source("./functions/sp_accum_group_functions.r")
 
-#########################################
-# Idea of if you had to do this manually: 
-#########################################
+# Let's use the function to plot SAC
+# - We have to specify:
+#   (1) x = the data frame containing the species-abundance 
+#           matrix and column identifiers (e.g. site, month, ect...).
+#   (2) groups = the column name which we want to compute different
+#                SAC's for. 
+test_sac <- sp_accum_group(x = data_clean, 
+                           groups = season)
+test_sac
 
-# - Bit of a hack for now, but it works. 
+# Now, let's plot the SAC's for the different seasons 
+# - We have to specify:
+#   (1) x = which is now the variable containing the SAC's by groups 
+#           from above. 
+test_plot_fun <- plot_sp_accum_group(x = test_sac) 
+test_plot_fun 
 
-# Run SAC for first group (summer)
-data_sac_summer <- data_clean %>%
-  dplyr::filter(season == "1") %>%
-  dplyr::select(-c(provinces, climatic_zones, 
-                   season, site, haplotype))
+# We can then edit the graph using standard ggplot syntax
+test_plot_fun +
+  labs(fill = "Season") + scale_x_continuous(limits = c(0, 30),
+                                             breaks = seq(0, 30, 10))
 
-sac1_summer <- poolaccum(data_sac_summer,
-                         permutations = 999)
-obs_summer <- data.frame(summary(sac1_summer)$S,check.names = FALSE)
-colnames(obs_summer) <- c("N", "S", "lower2.5", "higher97.5", "std")
-
-# Run SAC for second group (winter)
-data_sac_winter <- data_clean %>%
-  dplyr::filter(season == "2") %>%
-  dplyr::select(-c(provinces, climatic_zones, 
-                   season, site, haplotype))
-
-sac1_winter <- poolaccum(data_sac_winter,
-                         permutations = 999)
-obs_winter <- data.frame(summary(sac1_winter)$S,check.names = FALSE)
-colnames(obs_winter) <- c("N", "S", "lower2.5", "higher97.5", "std")
-
-# Combine summer and winter SAC's
-comb_obs <- bind_rows(obs_summer, 
-                      obs_winter, 
-                      .id = "id") 
-head(comb_obs)
-
+# Using the functions is quite a lot easier, and quicker! :) 
+# - Computing and plotting the SAC's now requires 2 lines of code. 
+# - Lesson: Learn how to write your own functions (Thanks Clarke!!!)
+#           (I would never have been able to do so a year ago without 
+#            his help)

@@ -148,9 +148,6 @@ plot_sp_est_all <- function(x){
 
 }
 
-b <- plot_sp_est_all(a)
-b
-
 # Define function to compute all richness estimators (no groups)
 
 sp_est_group <- function(x, groups){

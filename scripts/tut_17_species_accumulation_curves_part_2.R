@@ -8,14 +8,23 @@
 
 # Today, we are going to look at how to compute and plot species 
 # accumulation curves in R, using the amazing 'vegan' package. 
-# In this session, we are going to cover the most basic SAC - observed richness.
+# Last week we covered the most basic SAC - observed richness.
 # - Observed species richness (hereafter 'S') simply tells us:
 #   (1) how many species we have recorded, to date, and 
 #   (2) whether more surveys could yield new additional species. 
 # - It DOES NOT tell us how many species could be in the community 
 #   (i.e. we CANNOT extrapolate species richness estimates from S).
-#   - Next week, we will cover how to extrapolate species richness 
-#     (part 2). 
+
+# This week, we are going to calculate a range of species richness 
+# estimators (e.g. chao, jackknife, bootstrap). 
+# - These estimators represent different mathematical models used to predict
+#   how many species could be in the community being studied. 
+#   - I.e. we CAN now extrapolate potential species richness.
+# - You can go look at how the different estimates are calculated
+#   (type: ?poolaccum into the console)
+# - Briefly, they differ based on how they use the number of species 
+#   that only occur at 1 or 2 sites and the number of sites sampled,
+#   and the frequency that each species is recorded. 
 
 ###########################################################################
 # Load packages -----------------------------------------------------------

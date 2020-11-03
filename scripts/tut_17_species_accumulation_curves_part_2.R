@@ -181,12 +181,24 @@ test_plot_fun
 # - We have to specify:
 #   (1) x = the data frame containing the species-abundance 
 #           matrix and column identifiers (e.g. site, month, ect...).
-aaa <- sp_est_group(x = data_clean, groups = season)  
+aaa <- sp_est_group(x = data_clean, groups = seasons)
+
+# If we try this with climate zones, we get a awful looking error.
+# - The error tells us that the number of samples in at least one of the 
+#   climate zones is too small to run the SAC codes.
+aaa <- sp_est_group(x = data_clean, groups = climatic_zones)  
+
+# Looking at the raw data, we can see that only two surveys were 
+# performed in the 'Bsk' region. 
+# - We can filter out this region, and then run the SAC estimators for 
+#   the different climate zones. 
+data_clean1 <- data_clean %>%
+  dplyr::filter(!climatic_zones == "Bsk")
+aaa <- sp_est_group(x = data_clean1, groups = climatic_zones) 
 
 # Now, let's plot the different richness estimators 
 # - We have to specify:
 #   (1) x = which is now the variable containing the richness estimators 
 #           from above. 
 plot_sp_est_group(x = aaa) +
-  labs(fill = "Season") +
-  scale_x_continuous(limits = c(0, 30))
+  labs(fill = "Climate zones") 

@@ -224,7 +224,7 @@ source("./functions/sp_accum_group_functions.r")
 #   (2) groups = the column name which we want to compute different
 #                SAC's for. 
 test_sac <- sp_accum_group(x = data_clean, 
-                           groups = season)
+                           groups = provinces)
 test_sac
 
 # Now, let's plot the SAC's for the different seasons 
